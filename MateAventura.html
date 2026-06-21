@@ -109,11 +109,24 @@
   .qhead{display:flex;justify-content:space-between;align-items:center;color:var(--soft);font-weight:bold;margin-bottom:6px}
 
   /* Operación vertical (en columna) con ayuda visual */
-  .vop{width:max-content;margin:8px auto 12px;font-family:"Courier New",ui-monospace,monospace;font-weight:bold}
+  .vop{width:max-content;margin:8px auto 12px;padding:10px 12px 12px;border-radius:16px;border:1px solid #dbe5f4;
+    font-family:"Courier New",ui-monospace,monospace;font-weight:bold;
+    background-color:#fff;
+    background-image:
+      repeating-linear-gradient(0deg,#e6edf8 0 1px,transparent 1px 26px),
+      repeating-linear-gradient(90deg,#eef3fb 0 1px,transparent 1px 26px)}
   .vopgrid{display:grid;gap:0 4px}
-  .answer-box{display:grid;gap:0 4px;border-radius:14px;background:#fafcff;box-shadow:inset 0 0 0 3px var(--line);margin-top:2px;transition:box-shadow .2s,background .2s}
-  .answer-box.good{box-shadow:inset 0 0 0 3px var(--good);background:#eafaf3}
-  .answer-box.bad{box-shadow:inset 0 0 0 3px var(--warm);background:#fff6e8;animation:nudge .3s}
+  .vc.plabel{height:18px;font-size:9px;font-weight:bold;font-family:"Trebuchet MS",sans-serif;letter-spacing:.2px;color:#9fb0cd}
+  .vc.plabel.u{color:#16a06f}
+  .vc.plabel.d{color:#3f7cf0}
+  .vc.plabel.c{color:#7c5cff}
+  .answer-box{display:grid;gap:0 4px;margin-top:3px;background:transparent}
+  /* cada cifra del resultado en su propio cuadro (se puede tocar para elegir) */
+  .ansbox{border:3px solid #cbd6ea;border-radius:10px;background:#fff;box-sizing:border-box;height:56px;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+  .vc.ans.ansbox.sel{border-color:var(--brand);background:#eef4ff;box-shadow:0 0 0 4px rgba(63,124,240,.18)}
+  .answer-box.good .ansbox{border-color:var(--good);background:#eafaf3;color:var(--good-d);box-shadow:none}
+  .answer-box.bad .ansbox{border-color:var(--warm);background:#fff6e8;color:#e08a18}
+  .answer-box.bad{animation:nudge .3s}
   .vc{width:48px;height:60px;display:flex;align-items:center;justify-content:center;font-size:50px;color:var(--ink)}
   .vc.sign{width:38px;font-size:42px;color:var(--brand-2)}
   .vc.help{height:30px;font-size:24px;font-weight:bold}
@@ -125,8 +138,10 @@
   .vc.strike::after{content:"";position:absolute;left:7px;right:7px;top:48%;height:5px;background:#e0653a;border-radius:3px;transform:rotate(-14deg)}
   .vline{height:6px;background:var(--ink);border-radius:4px;margin:6px 0;width:100%}
   .help-legend{text-align:center;color:#e08a18;font-size:13px;font-weight:bold;min-height:16px;margin:-4px 0 8px}
-  .answer-box.good{border-color:var(--good);background:#eafaf3;color:var(--good-d);border-style:solid}
-  .answer-box.bad{border-color:var(--warm);background:#fff6e8;color:#e08a18;border-style:solid;animation:nudge .3s}
+  /* cajitas de llevada / préstamo (vacías para escribir cuando la ayuda está apagada) */
+  .vc.help.box{justify-self:center;width:32px;height:26px;border:2px dashed #cdd6e8;border-radius:7px;background:rgba(255,255,255,.7);font-size:18px}
+  .vc.help.box.carry{border:2px solid #f0c38a;color:#e08a18}
+  .vc.help.box.newtop{border:2px solid #9be0c0;color:#16a06f}
   @keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
   /* Keypad */
@@ -763,7 +778,7 @@ const SCENES = {
 let state = {
   world:Store.get("world", WORLDS[0].id),
   level:Store.get("level", "mix"),
-  pack:[], idx:0, answer:"", revealed:0,
+  pack:[], idx:0, cells:[], sel:0, revealed:0,
   attempts:0, mistakes:0, correctThisPack:0,
   totalCorrect:Store.get("totalCorrect",0),
   packsDone:Store.get("packsDone",0),
@@ -892,7 +907,7 @@ function renderLevels(){
 function currentWorld(){ return WORLDS.find(w=>w.id===state.world); }
 function startPack(){
   state.pack = makePack(state.level);
-  state.idx=0; state.answer=""; state.revealed=0;
+  state.idx=0; state.cells=[]; state.sel=0; state.revealed=0;
   state.correctThisPack=0; state.mistakes=0; state.noGiveUp=true;
   state.inv={};
   const w=currentWorld();
@@ -1016,16 +1031,19 @@ function buildKeypad(){
   const k=$("keypad"); k.innerHTML="";
   ["1","2","3","4","5","6","7","8","9","del","0","ok"].forEach(key=>{
     const b=document.createElement("button");
-    if(key==="del"){ b.className="key del"; b.textContent="⌫"; b.onclick=()=>{state.answer=state.answer.slice(0,-1); paintAnswer();}; }
+    if(key==="del"){ b.className="key del"; b.textContent="⌫"; b.onclick=padDelete; }
     else if(key==="ok"){ b.className="key ok"; b.textContent="✓"; b.onclick=submit; }
-    else { b.className="key"; b.textContent=key; b.onclick=()=>{ const mx=(state.pack[state.idx]&&state.pack[state.idx].w)||3; if(state.answer.length<mx){state.answer+=key; paintAnswer(); tone(520,.05,"sine",.03);} }; }
+    else { b.className="key"; b.textContent=key; b.onclick=()=>padInput(key); }
     k.appendChild(b);
   });
 }
 function showQuestion(){
   const q=state.pack[state.idx];
-  state.answer=""; state.attempts=0;
+  state.attempts=0;
   renderVertical(q);
+  // casillas del resultado (una por columna); empieza seleccionada la de Unidades
+  state.cells=new Array(q.w).fill("");
+  state.sel=q.w-1;
   $("packProgress").textContent=`Operación ${state.idx+1} de 6`;
   $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
   $("answerBox").className="answer-box";
@@ -1037,8 +1055,9 @@ function showQuestion(){
 /* Dibuja la operación en columna y calcula la ayuda visual
    (llevada en sumas, préstamo en restas). */
 function renderVertical(q){
-  const W=Math.max(String(q.a).length, String(q.b).length, String(q.ans).length);
-  q.w=W;
+  // mínimo 3 columnas para mostrar siempre Centenas · Decenas · Unidades
+  const W=Math.max(3, String(q.a).length, String(q.b).length, String(q.ans).length);
+  q.w=W; q.digits=Math.max(String(q.a).length,String(q.b).length,String(q.ans).length);
   const aD=String(q.a).padStart(W," ").split("");
   const bD=String(q.b).padStart(W," ").split("");
   const help=new Array(W).fill(null);   // {cls,txt} encima de cada columna
@@ -1078,11 +1097,15 @@ function renderVertical(q){
   $("answerBox").style.gridTemplateColumns=tpl;
 
   let html="";
-  // fila de ayuda (llevada/préstamo)
+  // fila de etiquetas de valor posicional (Centenas/Decenas/Unidades)
+  const PNAME=[["Unidades","u"],["Decenas","d"],["Centenas","c"]];
+  html+=`<div class="vc plabel sign"></div>`;
+  for(let i=0;i<W;i++){ const p=PNAME[W-1-i]||["",""]; html+=`<div class="vc plabel ${p[1]}">${p[0]}</div>`; }
+  // fila de ayuda (llevada/préstamo) — cajitas que se rellenan con la ayuda activada
   html+=`<div class="vc help sign"></div>`;
   for(let i=0;i<W;i++){
-    if(help[i]) html+=`<div class="vc help ${help[i].cls}">${help[i].txt}</div>`;
-    else html+=`<div class="vc help"></div>`;
+    if(help[i]) html+=`<div class="vc help box ${help[i].cls}">${help[i].txt}</div>`;
+    else html+=`<div class="vc help box"></div>`;
   }
   // fila A (número de arriba, con posible tachado)
   html+=`<div class="vc sign"></div>`;
@@ -1103,20 +1126,37 @@ function renderVertical(q){
 function paintAnswer(){
   const q=state.pack[state.idx];
   const W=(q&&q.w)||1;
+  if(!state.cells || state.cells.length!==W){ state.cells=new Array(W).fill(""); state.sel=W-1; }
   let html=`<div class="vc sign"></div>`;
-  if(state.answer===""){
-    for(let i=0;i<W;i++) html+=`<div class="vc ans ${i===W-1?'qmark':''}">${i===W-1?'?':''}</div>`;
-  } else {
-    const digits=String(state.answer).padStart(W," ").slice(-W).split("");
-    for(let i=0;i<W;i++) html+=`<div class="vc ans">${digits[i]===" "?"":digits[i]}</div>`;
+  for(let i=0;i<W;i++){
+    const v=state.cells[i]||"";
+    const sel=(i===state.sel)?" sel":"";
+    html+=`<div class="vc ans ansbox${sel}" onclick="selectCell(${i})">${v}</div>`;
   }
   $("answerBox").innerHTML=html;
 }
+/* El niño elige la casilla (unidad, decena, centena) donde escribir */
+function selectCell(i){ state.sel=i; paintAnswer(); tone(560,.04,"sine",.03); }
+function answerHasInput(){ return state.cells && state.cells.some(c=>c!==""); }
+function answerValue(){ return parseInt(state.cells.map(c=>c===""?"0":c).join(""),10); }
+function padInput(d){
+  const q=state.pack[state.idx]; if(!q) return;
+  if(state.sel<0 || state.sel>=q.w) state.sel=q.w-1;
+  state.cells[state.sel]=d;
+  if(state.sel>0) state.sel--;        // avanza hacia la izquierda (siguiente valor posicional)
+  paintAnswer(); tone(520,.05,"sine",.03);
+}
+function padDelete(){
+  if(!state.cells) return;
+  if(state.cells[state.sel]!==""){ state.cells[state.sel]=""; }
+  else if(state.sel < state.cells.length-1){ state.sel++; state.cells[state.sel]=""; }
+  paintAnswer();
+}
 
 function submit(){
-  if(state.answer==="") return;
+  if(!answerHasInput()) return;
   const q=state.pack[state.idx];
-  const val=parseInt(state.answer,10);
+  const val=answerValue();
   if(val===q.ans){
     // correcto
     $("answerBox").className="answer-box good win";
@@ -1148,7 +1188,7 @@ function submit(){
     else msg=`Pista: la respuesta empieza por ${(""+q.ans)[0]}…`;
     $("feedback").className="feedback warm";
     $("feedback").textContent=msg;
-    setTimeout(()=>{ state.answer=""; paintAnswer(); $("answerBox").className="answer-box"; }, 700);
+    setTimeout(()=>{ state.cells=new Array(q.w).fill(""); state.sel=q.w-1; paintAnswer(); $("answerBox").className="answer-box"; }, 700);
   }
 }
 function revealTile(i){
@@ -1656,8 +1696,10 @@ document.addEventListener("pointercancel", sheetCleanup);
 /* teclado físico opcional (tablet con teclado / PC) */
 document.addEventListener("keydown",e=>{
   if($("game").classList.contains("hidden")) return;
-  if(e.key>="0"&&e.key<="9"){ const mx=(state.pack[state.idx]&&state.pack[state.idx].w)||3; if(state.answer.length<mx){state.answer+=e.key;paintAnswer();} }
-  else if(e.key==="Backspace"){ state.answer=state.answer.slice(0,-1); paintAnswer(); }
+  if(e.key>="0"&&e.key<="9"){ padInput(e.key); }
+  else if(e.key==="Backspace"){ padDelete(); }
+  else if(e.key==="ArrowLeft"){ if(state.sel>0){ state.sel--; paintAnswer(); } }
+  else if(e.key==="ArrowRight"){ const q=state.pack[state.idx]; if(q&&state.sel<q.w-1){ state.sel++; paintAnswer(); } }
   else if(e.key==="Enter"){ submit(); }
 });
 
