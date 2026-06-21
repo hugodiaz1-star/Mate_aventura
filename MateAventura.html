@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mate Aventura — Repaso de 1º a 2º</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3F7CF0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mate Aventura">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --panel:#ffffff;
+    --ink:#2b3a55;
+    --soft:#6b7a99;
+    --brand:#3f7cf0;
+    --brand-2:#7c5cff;
+    --good:#27c08a;
+    --good-d:#16a06f;
+    --warm:#ffb13d;
+    --pink:#ff7eb6;
+    --line:#e3e9f2;
+    --shadow:0 10px 30px rgba(40,60,110,.10);
+    --r:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,system-ui,sans-serif;
+    background:linear-gradient(180deg,#eef3fb,#f6f8fc);
+    color:var(--ink);
+    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  body.reduce-motion *{animation:none!important;transition:none!important}
+  .wrap{max-width:880px;margin:0 auto;padding:16px 14px 60px}
+  .hidden{display:none!important}
+
+  /* Top bar */
+  .topbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:bold;font-size:20px;letter-spacing:.3px}
+  .brand .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+  .iconbtn{border:none;background:var(--panel);box-shadow:var(--shadow);border-radius:14px;width:44px;height:44px;font-size:21px;cursor:pointer;color:var(--ink)}
+  .iconbtn:active{transform:scale(.94)}
+  .topbtns{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+  @media (max-width:430px){ .brand{font-size:17px} .brand .logo{width:34px;height:34px;font-size:18px} .iconbtn{width:40px;height:40px;font-size:19px} }
+
+  /* Cards */
+  .card{background:var(--panel);border-radius:var(--r);box-shadow:var(--shadow);padding:22px;margin-bottom:16px;border:1px solid var(--line)}
+  h1,h2,h3{margin:0 0 10px}
+  h1{font-size:26px}
+  .lead{color:var(--soft);font-size:16px;line-height:1.5}
+
+  /* Buttons */
+  .btn{border:none;border-radius:16px;padding:16px 20px;font-size:18px;font-weight:bold;cursor:pointer;font-family:inherit;box-shadow:var(--shadow)}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
+  .btn-good{background:linear-gradient(135deg,var(--good),var(--good-d));color:#fff}
+  .btn-ghost{background:#eef2fa;color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* World picker */
+  .worlds{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .world{cursor:pointer;border-radius:20px;padding:16px;color:#fff;text-align:center;box-shadow:var(--shadow);border:none;position:relative;overflow:hidden;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:inherit}
+  .world:active{transform:scale(.97)}
+  .world .wname{font-size:19px;font-weight:bold}
+  .world .wchar{font-size:14px;opacity:.95}
+  .world svg{width:84px;height:84px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+  .world.locked{background:linear-gradient(140deg,#c2ccdd,#9aa7c2);cursor:not-allowed}
+  .world.locked svg{filter:none}
+  .world .qmarkbig{font-size:60px;font-weight:bold;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18))}
+  .world .lockhint{font-size:12px;opacity:.95}
+  .world .donecheck{position:absolute;top:8px;right:10px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.92);color:#16a06f;font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 5px rgba(0,0,0,.2)}
+  .w-race{background:linear-gradient(140deg,#ff5e62,#ff9966)}
+  .w-hero{background:linear-gradient(140deg,#36d1dc,#5b86e5)}
+  .w-toy{background:linear-gradient(140deg,#9d50bb,#6e48aa)}
+  .w-music{background:linear-gradient(140deg,#ff7eb6,#ff65a3,#7a5cff)}
+  .w-dino{background:linear-gradient(140deg,#4cb763,#2e8b57)}
+  .w-dragon{background:linear-gradient(140deg,#9d7bff,#6e48aa)}
+  .w-cat{background:linear-gradient(140deg,#7aa8e6,#3f6fc0)}
+  .w-octo{background:linear-gradient(140deg,#ff9eb6,#ff6f91)}
+
+  /* Level chips */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .chip{border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 14px;font-weight:bold;cursor:pointer;font-family:inherit;font-size:15px;color:var(--soft)}
+  .chip.active{border-color:var(--brand);color:var(--brand);background:#eef4ff}
+
+  /* Game layout */
+  .gamegrid{display:grid;grid-template-columns:1fr;gap:16px}
+  .reveal-card{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .reveal-stage{width:230px;height:230px;background:radial-gradient(circle at 50% 35%,#fbfdff,#eef3fb);border-radius:24px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .reveal-stage svg{width:200px;height:200px}
+  .piece{opacity:0;transform:translateY(8px) scale(.9);transition:opacity .5s ease,transform .5s cubic-bezier(.2,1.3,.4,1)}
+  .piece.show{opacity:1;transform:none}
+  .piece-grid{position:absolute;inset:8px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px;pointer-events:none}
+  .tile{background:linear-gradient(135deg,#dfe7f5,#cfd9ee);border-radius:10px;transition:opacity .45s ease;opacity:1;display:flex;align-items:center;justify-content:center;color:#aab8d6;font-weight:bold;font-size:20px}
+  .tile.gone{opacity:0}
+  .progresstext{font-weight:bold;color:var(--soft)}
+  .charname{font-size:22px;font-weight:bold;background:linear-gradient(135deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent;min-height:26px}
+
+  /* Question */
+  .qhead{display:flex;justify-content:space-between;align-items:center;color:var(--soft);font-weight:bold;margin-bottom:6px}
+
+  /* Operación vertical (en columna) con ayuda visual */
+  .vop{width:max-content;margin:8px auto 12px;font-family:"Courier New",ui-monospace,monospace;font-weight:bold}
+  .vopgrid{display:grid;gap:0 4px}
+  .answer-box{display:grid;gap:0 4px;border-radius:14px;background:#fafcff;box-shadow:inset 0 0 0 3px var(--line);margin-top:2px;transition:box-shadow .2s,background .2s}
+  .answer-box.good{box-shadow:inset 0 0 0 3px var(--good);background:#eafaf3}
+  .answer-box.bad{box-shadow:inset 0 0 0 3px var(--warm);background:#fff6e8;animation:nudge .3s}
+  .vc{width:48px;height:60px;display:flex;align-items:center;justify-content:center;font-size:50px;color:var(--ink)}
+  .vc.sign{width:38px;font-size:42px;color:var(--brand-2)}
+  .vc.help{height:30px;font-size:24px;font-weight:bold}
+  .vc.carry{color:#e08a18}                 /* la llevada (suma) */
+  .vc.newtop{color:#16a06f}                /* dígito nuevo tras prestar (resta) */
+  .vc.ans{height:60px;font-size:50px;color:var(--brand)}
+  .vc.qmark{color:#c2cde2}
+  .vc.strike{position:relative;color:#aab8d6}
+  .vc.strike::after{content:"";position:absolute;left:7px;right:7px;top:48%;height:5px;background:#e0653a;border-radius:3px;transform:rotate(-14deg)}
+  .vline{height:6px;background:var(--ink);border-radius:4px;margin:6px 0;width:100%}
+  .help-legend{text-align:center;color:#e08a18;font-size:13px;font-weight:bold;min-height:16px;margin:-4px 0 8px}
+  .answer-box.good{border-color:var(--good);background:#eafaf3;color:var(--good-d);border-style:solid}
+  .answer-box.bad{border-color:var(--warm);background:#fff6e8;color:#e08a18;border-style:solid;animation:nudge .3s}
+  @keyframes nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* Keypad */
+  .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .key{border:none;border-radius:16px;background:#eef2fa;font-size:28px;font-weight:bold;padding:16px 0;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 3px 0 #d6deec}
+  .key:active{transform:translateY(2px);box-shadow:0 1px 0 #d6deec}
+  .key.del{background:#ffe9e2;color:#e0653a;box-shadow:0 3px 0 #f6cdbf}
+  .key.ok{background:linear-gradient(135deg,var(--good),var(--good-d));color:#fff;box-shadow:0 3px 0 #0f8a5f}
+
+  .feedback{text-align:center;font-weight:bold;font-size:18px;min-height:24px;margin-top:8px;color:var(--good-d)}
+  .feedback.warm{color:#e08a18}
+
+  /* Criatura distractora (emoji) */
+  #fly{position:fixed;z-index:50;width:48px;height:48px;font-size:40px;line-height:48px;text-align:center;cursor:pointer;pointer-events:auto;filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));will-change:transform;user-select:none}
+  #fly.resting{animation:hover 1.2s ease-in-out infinite}
+  @keyframes hover{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
+
+  /* Animación de acierto */
+  .reward-pop{position:fixed;font-size:30px;z-index:75;pointer-events:none;will-change:transform,opacity}
+  .answer-box.win{animation:goodpop .45s ease-out}
+  @keyframes goodpop{0%{transform:scale(1)}40%{transform:scale(1.09)}100%{transform:scale(1)}}
+  .stamp{position:fixed;z-index:78;font-size:64px;pointer-events:none}
+
+  /* Álbum de colección */
+  .album-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 4px;padding:2px}
+  .acard{display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:14px;padding:8px 4px;background:#f3f6fc;border:1px solid var(--line)}
+  .acard .ae{font-size:30px;filter:grayscale(1);opacity:.35}
+  .acard.got{background:#eafaf3;border-color:#bfe9d6}
+  .acard.got .ae{filter:none;opacity:1}
+  .acard .an{font-size:10px;color:var(--soft);font-weight:bold;text-align:center;line-height:1.1;min-height:22px}
+  .album-cat{font-weight:bold;color:var(--soft);text-align:left;margin:8px 2px 0;font-size:14px}
+
+  /* Álbum Matemágico: recompensas desbloqueadas */
+  .rwrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .rw{display:flex;flex-direction:column;align-items:center;gap:3px;background:#fff;border-radius:14px;padding:8px 10px;min-width:78px;box-shadow:var(--shadow)}
+  .rwico{font-size:34px;line-height:1;display:flex;align-items:center;justify-content:center;height:40px}
+  .rwico svg{width:40px;height:40px}
+  .rwico img{width:40px;height:40px;object-fit:contain}
+  .rwlbl{font-size:11px;color:var(--soft);text-align:center;line-height:1.15}
+  .rwlbl b{color:var(--ink)}
+  .magic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0}
+  .mcard{display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:14px;padding:8px 4px;background:#f3f6fc;border:1px solid var(--line)}
+  .mcard .mi{font-size:30px;height:40px;display:flex;align-items:center;justify-content:center;filter:grayscale(1);opacity:.35}
+  .mcard .mi svg,.mcard .mi img{width:38px;height:38px;object-fit:contain}
+  .mcard.got{background:#f3ecff;border-color:#dccbf5}
+  .mcard.got .mi{filter:none;opacity:1}
+  .mcard .mn{font-size:10px;font-weight:bold;color:var(--soft);text-align:center;line-height:1.1;min-height:22px}
+  .animlist{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+  .animrow{display:flex;align-items:center;justify-content:space-between;background:#f3f6fc;border:1px solid var(--line);border-radius:14px;padding:8px 12px}
+  .animrow.got{background:#f3ecff;border-color:#dccbf5}
+  .animrow .anm{font-weight:bold;color:var(--ink);font-size:14px}
+  .animrow .anbtn{border:none;border-radius:12px;padding:8px 14px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-weight:bold;cursor:pointer;font-family:inherit}
+  .animrow .anlock{color:var(--soft);font-weight:bold;font-size:13px}
+
+  /* Lámina de pegatinas (arrastrar y soltar) */
+  .sheetmodal{max-width:760px;width:96vw}
+  .sheetwrap{display:flex;gap:10px;margin:10px 0}
+  .sheettray{display:flex;flex-direction:column;gap:8px;width:62px;flex:0 0 auto;max-height:58vh;overflow-y:auto;padding:4px;background:#f3f6fc;border-radius:14px;border:1px solid var(--line)}
+  .traysticker{font-size:30px;line-height:1;text-align:center;background:#fff;border-radius:12px;padding:6px 2px;box-shadow:var(--shadow);cursor:grab;touch-action:none;user-select:none}
+  .traysticker:active{cursor:grabbing}
+  .trayhint{font-size:11px;color:var(--soft);text-align:center;font-weight:bold;padding:6px}
+  .sheetboard{position:relative;flex:1;height:58vh;border-radius:16px;border:2px dashed #c7d3ea;overflow:hidden;
+    background:linear-gradient(#fbfdff,#fbfdff),
+      repeating-linear-gradient(0deg,transparent 0 31px,#e7eefa 31px 32px),
+      repeating-linear-gradient(90deg,transparent 0 31px,#e7eefa 31px 32px);
+    background-blend-mode:normal;touch-action:none}
+  .placed{position:absolute;font-size:38px;line-height:1;transform:translate(-50%,-50%);cursor:grab;touch-action:none;user-select:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+  .placed:active{cursor:grabbing}
+  .sheetdrag{position:fixed;z-index:95;font-size:42px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
+  .sheetfoot{display:flex;gap:10px;align-items:center;margin-top:4px}
+  .sheettrash{flex:0 0 auto;display:flex;align-items:center;gap:6px;border:2px dashed #f0b6a3;color:#e0653a;background:#fff3ee;border-radius:14px;padding:10px 14px;font-weight:bold;font-size:14px}
+  .sheettrash.hot{background:#ffe0d6;border-color:#e0653a}
+
+  /* Escena de lección */
+  .lesson-img{margin:0 auto 4px}
+  .lesson-img svg{width:210px;height:auto;display:block;margin:0 auto}
+
+  /* Carrera de avance (tú vs liebre) */
+  .racewrap{margin:8px 0 12px}
+  .racetrack{position:relative;height:72px;border-radius:14px;overflow:hidden;
+    background:linear-gradient(90deg,#ff5e62,#ff9b54,#ffd34d,#7bd88f,#36d1dc,#5b86e5,#9d7bff);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+  .rlane{position:absolute;left:0;right:0;height:0;border-top:3px dashed rgba(255,255,255,.65)}
+  .rlane-top{top:34%}
+  .rlane-bot{top:67%}
+  .rstart{position:absolute;left:3%;top:6px;bottom:6px;width:6px;border-radius:3px;opacity:.85;
+    background:repeating-linear-gradient(45deg,#fff 0 4px,#2b3142 4px 8px)}
+  .rfinish{position:absolute;right:5px;top:50%;transform:translateY(-50%);font-size:26px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+  .car{position:absolute;left:6%;width:42px;transform:translateX(-50%);transition:left .7s cubic-bezier(.3,1,.4,1);will-change:left}
+  #carYou{top:7px}
+  #carCpu{top:38px}
+  .car svg{width:42px;height:24px;display:block;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+  body.reduce-motion .car{transition:left .25s linear}
+  .rlabels{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:bold;color:var(--soft);margin-top:5px;padding:0 4px}
+  #raceMsg{color:var(--good-d);text-align:center;flex:1}
+
+  /* Power-ups (caja sorpresa) */
+  .powerbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:8px;min-height:14px}
+  .pwr{position:relative;display:flex;align-items:center;justify-content:center;border:none;border-radius:14px;padding:8px 12px;background:#fff;box-shadow:var(--shadow);font-size:24px;cursor:pointer;font-family:inherit;line-height:1}
+  .pwr:active{transform:scale(.92)}
+  .pwr .cnt{position:absolute;top:-7px;right:-7px;background:var(--brand);color:#fff;border-radius:50%;font-size:11px;font-weight:bold;width:19px;height:19px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+  .powerhint{color:var(--soft);font-size:12px;font-weight:bold}
+  .pwr-toast{position:fixed;left:50%;top:28%;transform:translateX(-50%);background:#fff;border-radius:18px;padding:14px 20px;box-shadow:0 14px 34px rgba(0,0,0,.28);z-index:79;font-weight:bold;font-size:18px;text-align:center;animation:pop .3s cubic-bezier(.2,1.3,.4,1)}
+  .pwr-toast .pe{font-size:40px;display:block;margin-bottom:4px}
+
+  /* Imágenes (fotos) de personajes con respaldo SVG */
+  .reveal-stage img.charimg{width:200px;height:200px;object-fit:contain;display:block}
+  .world img.wimg{width:84px;height:84px;object-fit:contain;border-radius:14px;background:rgba(255,255,255,.25);filter:drop-shadow(0 4px 6px rgba(0,0,0,.18))}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(30,42,70,.45);display:flex;align-items:center;justify-content:center;z-index:80;padding:18px}
+  .modal{background:var(--panel);border-radius:24px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.25);text-align:center;animation:pop .35s cubic-bezier(.2,1.3,.4,1);max-height:90vh;overflow-y:auto}
+  @keyframes pop{from{transform:scale(.8);opacity:0}to{transform:none;opacity:1}}
+  .modal .big{font-size:60px;margin-bottom:6px}
+  .modal h2{font-size:24px}
+  .bugfact{background:#eef7ff;border-radius:16px;padding:14px;color:var(--ink);font-size:16px;line-height:1.5;text-align:left;margin:12px 0}
+  .refocus{color:var(--soft);font-size:14px;margin-top:8px}
+
+  /* Badges */
+  .badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .badge{display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.4;filter:grayscale(.8);transition:.4s}
+  .badge.earned{opacity:1;filter:none}
+  .badge .ring{width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;background:conic-gradient(var(--good) 0deg, var(--good) 360deg);box-shadow:var(--shadow)}
+  .badge .ring .inner{width:62px;height:62px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+  .badge .blabel{font-size:12px;font-weight:bold;text-align:center;color:var(--soft);line-height:1.2}
+  .badge.r-blue .ring{background:conic-gradient(var(--brand),#9bbcff)}
+  .badge.r-purple .ring{background:conic-gradient(var(--brand-2),#c4b1ff)}
+  .badge.r-pink .ring{background:conic-gradient(var(--pink),#ffc2dd)}
+  .badge.r-warm .ring{background:conic-gradient(var(--warm),#ffd99b)}
+  .badge.r-green .ring{background:conic-gradient(var(--good),#9be9cd)}
+
+  /* breathing */
+  .breath{width:120px;height:120px;border-radius:50%;margin:10px auto;background:radial-gradient(circle,#bfe0ff,#7cb8ff);animation:breathe 8s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(.7)}50%{transform:scale(1.05)}}
+
+  .settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .settings-row:last-child{border-bottom:none}
+  .switch{position:relative;width:54px;height:30px;flex:0 0 auto}
+  .switch input{display:none}
+  .slider{position:absolute;inset:0;background:#cdd6e8;border-radius:30px;transition:.2s;cursor:pointer}
+  .slider::before{content:"";position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .switch input:checked + .slider{background:var(--good)}
+  .switch input:checked + .slider::before{transform:translateX(24px)}
+
+  /* Nilo el Navegante (guía permanente) */
+  .nilobar{display:flex;align-items:center;gap:11px;background:#eaf4ff;border:1px solid #d4e6fb;border-radius:20px;padding:10px 12px;margin-bottom:14px}
+  .nilobar-home{background:linear-gradient(135deg,#eaf4ff,#f3ecff)}
+  .niloava{width:56px;height:56px;flex:0 0 auto;border-radius:50%;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+  .niloava img,.niloava svg{width:56px;height:56px;object-fit:cover;object-position:center 18%;display:block}
+  .nilobubble{position:relative;background:#fff;border-radius:14px;padding:10px 13px;font-weight:bold;color:var(--ink);font-size:15px;line-height:1.35;box-shadow:var(--shadow);flex:1}
+  .nilobubble::before{content:"";position:absolute;left:-7px;top:20px;border:7px solid transparent;border-right-color:#fff}
+  .nilobubble.warm{background:#fff6e8}
+  .nilobubble.warm::before{border-right-color:#fff6e8}
+  .nilobubble.happy{background:#eafaf3}
+  .nilobubble.happy::before{border-right-color:#eafaf3}
+  .lesson-nilo{width:64px;height:64px;border-radius:50%;overflow:hidden;margin:0 auto 6px;background:#fff;box-shadow:var(--shadow)}
+  .lesson-nilo img,.lesson-nilo svg{width:64px;height:64px;object-fit:cover;object-position:center 18%}
+
+  .footer-note{text-align:center;color:#9fb0cd;font-size:13px;margin-top:10px}
+  .footer-note.credit{margin-top:4px;font-weight:bold;color:#7a8aa8}
+  .confetti{position:fixed;width:10px;height:14px;z-index:70;top:-20px;border-radius:2px;pointer-events:none}
+  @media (max-width:480px){
+    .question{font-size:46px}
+    .reveal-stage{width:200px;height:200px}
+    .reveal-stage svg{width:172px;height:172px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand"><span class="logo">🚀</span> Mate Aventura</div>
+    <div class="topbtns">
+      <button class="iconbtn" id="btnMagic" title="Álbum Matemágico">🎴</button>
+      <button class="iconbtn" id="btnAlbum" title="Mi álbum de animales">🦋</button>
+      <button class="iconbtn" id="btnBadges" title="Mis insignias">🏅</button>
+      <button class="iconbtn" id="btnSettings" title="Ajustes">⚙️</button>
+    </div>
+  </div>
+
+  <!-- ===== HOME ===== -->
+  <section id="home">
+    <div class="nilobar nilobar-home">
+      <div class="niloava" id="niloAvaHome"></div>
+      <div class="nilobubble"><b>¡Hola! Soy Nilo el Navegante 🦦</b><br>Vamos a practicar matemáticas juntos. Yo te acompaño en todo momento.</div>
+    </div>
+    <div class="card">
+      <h1>¡Hola, explorador! 👋</h1>
+      <p class="lead">Resuelve <b>6 operaciones</b> y descubre quién aparece en la imagen secreta. Cada misión te da una <b>insignia</b>. ¡Tú puedes!</p>
+    </div>
+
+    <div class="card">
+      <h2>1) Elige tu mundo</h2>
+      <div class="worlds" id="worldPicker"></div>
+    </div>
+
+    <div class="card">
+      <h2>2) Elige tu nivel</h2>
+      <p class="lead" style="margin-bottom:10px">Mezcla repaso de 1º con el reto de 2º (dos dígitos).</p>
+      <div class="chips" id="levelChips"></div>
+    </div>
+
+    <button class="btn btn-primary" id="btnStart" style="width:100%;font-size:22px;padding:20px">▶ Empezar misión</button>
+    <p class="footer-note">Hecho con cariño para practicar a su ritmo 💙</p>
+    <p class="footer-note credit">Hecho por Hugo I. Díaz · Sin fines de lucro · Distribución libre</p>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="game" class="hidden">
+    <div class="nilobar">
+      <div class="niloava" id="niloAva"></div>
+      <div class="nilobubble" id="niloMsg">¡Vamos juntos! Resuelve con calma 🦦</div>
+    </div>
+    <div class="card reveal-card">
+      <div class="progresstext" id="packProgress">Operación 1 de 6</div>
+      <div class="reveal-stage">
+        <div id="charSvg"></div>
+        <div class="piece-grid" id="tileGrid"></div>
+      </div>
+      <div class="charname" id="charName"></div>
+    </div>
+
+    <div class="card">
+      <div class="qhead">
+        <span id="levelLabel">Nivel</span>
+        <span id="streakLabel">Racha: 0 🔥</span>
+      </div>
+
+      <!-- Carrera de avance: tú vs la liebre -->
+      <div class="racewrap" id="raceWrap">
+        <div class="racetrack">
+          <div class="rlane rlane-top"></div>
+          <div class="rlane rlane-bot"></div>
+          <div class="rstart"></div>
+          <div class="rfinish">🏁</div>
+          <div class="car" id="carYou">
+            <svg viewBox="0 0 60 34"><ellipse cx="30" cy="31" rx="24" ry="3" fill="#000" opacity=".15"/><path d="M4 22 q4 -10 18 -10 l6 -6 q10 0 14 6 l10 2 q6 1 6 6 q0 2 -3 2 L8 24 q-4 0 -4 -2z" fill="#3f7cf0"/><rect x="23" y="9" width="13" height="7" rx="3" fill="#cdefff"/><circle cx="18" cy="25" r="6" fill="#2b3142"/><circle cx="18" cy="25" r="2.4" fill="#cfd9ee"/><circle cx="42" cy="25" r="6" fill="#2b3142"/><circle cx="42" cy="25" r="2.4" fill="#cfd9ee"/></svg>
+          </div>
+          <div class="car" id="carCpu">
+            <svg viewBox="0 0 60 34"><ellipse cx="30" cy="31" rx="24" ry="3" fill="#000" opacity=".15"/><path d="M4 22 q4 -10 18 -10 l6 -6 q10 0 14 6 l10 2 q6 1 6 6 q0 2 -3 2 L8 24 q-4 0 -4 -2z" fill="#ff8a3d"/><rect x="23" y="9" width="13" height="7" rx="3" fill="#ffe6cf"/><circle cx="18" cy="25" r="6" fill="#2b3142"/><circle cx="18" cy="25" r="2.4" fill="#cfd9ee"/><circle cx="42" cy="25" r="6" fill="#2b3142"/><circle cx="42" cy="25" r="2.4" fill="#cfd9ee"/></svg>
+          </div>
+        </div>
+        <div class="rlabels"><span>🏎️ Tú</span><span id="raceMsg"></span><span>🐇 Liebre</span></div>
+        <div class="powerbar" id="powerups"></div>
+      </div>
+
+      <div class="vop" id="vop">
+        <div class="vopgrid" id="vopGrid"></div>
+        <div class="vline"></div>
+        <div class="answer-box" id="answerBox"></div>
+      </div>
+      <div class="help-legend" id="helpLegend"></div>
+      <div class="keypad" id="keypad"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btnHome">⏸ Salir</button>
+      <button class="btn btn-ghost" id="btnHint">💡 Pista</button>
+    </div>
+  </section>
+</div>
+
+<!-- Criatura distractora (se le pone el emoji por JS) -->
+<div id="fly" class="hidden">🪰</div>
+
+<!-- Modal mount -->
+<div id="modalMount"></div>
+<div id="confettiMount"></div>
+
+<script>
+/* ============================================================
+   MATE AVENTURA — app de repaso de matemáticas (1º -> 2º)
+   Diseñada con consideraciones para un niño autista:
+   - estructura predecible, refuerzo positivo (sin castigo),
+   - distracciones controlables, sonidos suaves opcionales.
+   ============================================================ */
+"use strict";
+
+/* ---------- Persistencia segura ---------- */
+const Store = {
+  get(k, def){ try{ const v=localStorage.getItem("ma_"+k); return v==null?def:JSON.parse(v);}catch(e){return def;} },
+  set(k, val){ try{ localStorage.setItem("ma_"+k, JSON.stringify(val)); }catch(e){} }
+};
+
+/* ---------- Ajustes ---------- */
+const settings = Object.assign({
+  sound:true, distractions:true, reduceMotion:false, distractFreq:"media", showCarry:true,
+  race:true, racePace:"tranquila"
+}, Store.get("settings", {}));
+function saveSettings(){ Store.set("settings", settings); applySettings(); }
+function applySettings(){
+  document.body.classList.toggle("reduce-motion", settings.reduceMotion);
+}
+
+/* ---------- Sonido suave (WebAudio) ---------- */
+let actx=null;
+function tone(freq, dur, type="sine", vol=0.06){
+  if(!settings.sound) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.value=vol; o.connect(g); g.connect(actx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime+dur);
+    o.stop(actx.currentTime+dur);
+  }catch(e){}
+}
+const sndGood=()=>{tone(660,.12);setTimeout(()=>tone(880,.18),110);};
+const sndOops=()=>tone(300,.2,"triangle",.05);
+const sndReveal=()=>{tone(520,.1);setTimeout(()=>tone(700,.12),90);setTimeout(()=>tone(920,.18),190);};
+const sndBadge=()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.16),i*90));};
+
+/* ============================================================
+   PERSONAJES (SVG originales, NO usan marcas registradas).
+   Cada uno se dibuja por capas; revelamos "tiles" encima.
+   ============================================================ */
+/* Imágenes base64 de los personajes (se rellena con las fotos de Hugo).
+   Clave = id del mundo: race, hero, toy, music, dino, dragon, cat, octo.
+   Si un id no tiene imagen aquí, se usa el dibujo SVG como respaldo. */
+const IMAGES = {
+  // Archivos de imagen junto al HTML (o data:base64). Faltantes usan el dibujo SVG.
+  race: "Turbo.png",
+  hero: "Robi.png",
+  toy:  "Cosmos.png",
+  music:"Luna.png",
+  dino: "Rex.png",
+  dragon:"Draco.png",
+  cat:  "Misi.png",
+  octo: "Tako.png"
+};
+
+/* ---------- Nilo el Navegante: guía permanente ----------
+   Si pones un archivo "nilo.png" junto al HTML, se usa esa imagen;
+   si no, se dibuja este otter en SVG como respaldo. */
+const NILO_SVG = `<svg viewBox="0 0 100 100"><circle cx="30" cy="30" r="11" fill="#c98a52"/><circle cx="70" cy="30" r="11" fill="#c98a52"/><circle cx="30" cy="30" r="5" fill="#9c6638"/><circle cx="70" cy="30" r="5" fill="#9c6638"/><circle cx="50" cy="54" r="38" fill="#c98a52"/><ellipse cx="50" cy="64" rx="25" ry="21" fill="#f1ddc4"/><circle cx="37" cy="49" r="8" fill="#fff"/><circle cx="63" cy="49" r="8" fill="#fff"/><circle cx="38" cy="50" r="4.6" fill="#3a2a1a"/><circle cx="62" cy="50" r="4.6" fill="#3a2a1a"/><circle cx="39.6" cy="48.4" r="1.5" fill="#fff"/><circle cx="63.6" cy="48.4" r="1.5" fill="#fff"/><ellipse cx="50" cy="60" rx="6.5" ry="4.8" fill="#3a2a1a"/><path d="M50 65 Q50 72 44 72 M50 65 Q50 72 56 72" stroke="#9c6638" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M40 73 Q50 80 60 73" stroke="#9c6638" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+function niloAvatarHTML(){ return `<img src="Nilo.png" alt="Nilo" onerror="this.outerHTML=NILO_SVG">`; }
+function setNiloAvatars(){
+  ["niloAva","niloAvaHome"].forEach(id=>{ const el=document.getElementById(id); if(el) el.innerHTML=niloAvatarHTML(); });
+}
+function niloSay(text, mood){
+  const b=document.getElementById("niloMsg"); if(!b) return;
+  b.textContent=text;
+  b.className="nilobubble"+(mood?(" "+mood):"");
+}
+const NILO_PRAISE=["¡Muy bien! Lo hiciste tú 🦦","¡Excelente trabajo!","¡Vas genial, sigue así!","¡Lo lograste! Estoy orgulloso 🌟","¡Qué bien lo pensaste!"];
+const NILO_GENTLE=["Veamos otra vez, juntos. Sin prisa 🦦","No pasa nada, lo intentamos de nuevo 💙","Equivocarse ayuda a aprender. Probemos otra vez.","Respira y volvemos a intentarlo, estoy contigo."];
+const WORLDS = [
+  {
+    id:"race", cls:"w-race", name:"Carreras", char:"Turbo", role:"Velocidad", intro:"¡Vamos con agilidad! Piensa rápido y diviértete conmigo.",
+    icon:`<svg viewBox="0 0 100 100"><rect x="18" y="48" width="64" height="22" rx="10" fill="#fff"/><rect x="30" y="34" width="34" height="20" rx="8" fill="#ffd34d"/><circle cx="32" cy="72" r="11" fill="#2b3142"/><circle cx="68" cy="72" r="11" fill="#2b3142"/><circle cx="32" cy="72" r="4" fill="#fff"/><circle cx="68" cy="72" r="4" fill="#fff"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="170" rx="78" ry="12" fill="#000" opacity=".08"/>
+      <rect x="22" y="96" width="156" height="42" rx="20" fill="#ff5e62"/>
+      <path d="M60 96 Q100 56 150 92 L150 96 Z" fill="#ffd34d"/>
+      <rect x="74" y="70" width="56" height="30" rx="12" fill="#7fd1ff"/>
+      <rect x="80" y="76" width="44" height="18" rx="8" fill="#cdefff"/>
+      <circle cx="60" cy="142" r="22" fill="#2b3142"/><circle cx="60" cy="142" r="9" fill="#cfd9ee"/>
+      <circle cx="140" cy="142" r="22" fill="#2b3142"/><circle cx="140" cy="142" r="9" fill="#cfd9ee"/>
+      <rect x="150" y="104" width="30" height="14" rx="7" fill="#ffae3d"/>
+      <circle cx="44" cy="110" r="6" fill="#fff"/>
+    </svg>`
+  },
+  {
+    id:"hero", cls:"w-hero", name:"Héroes Robot", char:"Robi", role:"Explicador", intro:"Te enseño paso a paso. Equivocarse está bien, así aprendemos.",
+    icon:`<svg viewBox="0 0 100 100"><rect x="26" y="26" width="48" height="48" rx="22" fill="#fff"/><circle cx="40" cy="48" r="6" fill="#2b3142"/><circle cx="60" cy="48" r="6" fill="#2b3142"/><path d="M40 60 Q50 66 60 60" stroke="#2b3142" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="178" rx="60" ry="10" fill="#000" opacity=".08"/>
+      <rect x="58" y="92" width="84" height="78" rx="30" fill="#eaf3ff"/>
+      <rect x="44" y="104" width="20" height="44" rx="10" fill="#5b86e5"/>
+      <rect x="136" y="104" width="20" height="44" rx="10" fill="#5b86e5"/>
+      <circle cx="100" cy="62" r="42" fill="#f7fbff"/>
+      <circle cx="100" cy="62" r="42" fill="none" stroke="#cfe2ff" stroke-width="4"/>
+      <circle cx="84" cy="62" r="7" fill="#2b3142"/><circle cx="116" cy="62" r="7" fill="#2b3142"/>
+      <circle cx="86" cy="60" r="2.2" fill="#fff"/><circle cx="118" cy="60" r="2.2" fill="#fff"/>
+      <path d="M86 76 Q100 86 114 76" stroke="#2b3142" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <rect x="92" y="116" width="16" height="16" rx="5" fill="#36d1dc"/>
+    </svg>`
+  },
+  {
+    id:"toy", cls:"w-toy", name:"Juguete Espacial", char:"Cosmo", role:"Explorador", intro:"¡A descubrir! Cada operación es una aventura por explorar.",
+    icon:`<svg viewBox="0 0 100 100"><path d="M50 18 C66 30 66 56 50 80 C34 56 34 30 50 18Z" fill="#fff"/><circle cx="50" cy="44" r="9" fill="#7fd1ff"/><path d="M50 80 l-8 12 M50 80 l8 12" stroke="#ffae3d" stroke-width="6" stroke-linecap="round"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="182" rx="46" ry="8" fill="#000" opacity=".08"/>
+      <path d="M100 24 C140 60 140 120 100 156 C60 120 60 60 100 24Z" fill="#f4f0ff"/>
+      <path d="M100 24 C120 42 124 74 120 110 L100 100Z" fill="#e6dcff"/>
+      <circle cx="100" cy="78" r="20" fill="#7fd1ff"/>
+      <circle cx="100" cy="78" r="20" fill="none" stroke="#9d50bb" stroke-width="5"/>
+      <circle cx="93" cy="72" r="5" fill="#fff" opacity=".8"/>
+      <path d="M62 120 L40 150 L72 138Z" fill="#ff7eb6"/>
+      <path d="M138 120 L160 150 L128 138Z" fill="#ff7eb6"/>
+      <path d="M100 156 q-14 22 0 36 q14 -14 0 -36Z" fill="#ffae3d"/>
+      <circle cx="150" cy="44" r="4" fill="#ffd34d"/><circle cx="44" cy="60" r="3" fill="#ffd34d"/>
+    </svg>`
+  },
+  {
+    id:"music", cls:"w-music", name:"Estrella Musical", char:"Luna", role:"Celebración", intro:"¡Lo haces genial! Celebremos juntos cada logro tuyo.",
+    icon:`<svg viewBox="0 0 100 100"><circle cx="50" cy="46" r="22" fill="#fff"/><circle cx="42" cy="44" r="4" fill="#2b3142"/><circle cx="58" cy="44" r="4" fill="#2b3142"/><path d="M30 46 a20 20 0 0 1 40 0" fill="none" stroke="#ff65a3" stroke-width="6"/><circle cx="30" cy="52" r="7" fill="#ff65a3"/><circle cx="70" cy="52" r="7" fill="#ff65a3"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="180" rx="56" ry="9" fill="#000" opacity=".08"/>
+      <path d="M64 110 Q100 150 136 110 L132 168 Q100 178 68 168Z" fill="#7a5cff"/>
+      <circle cx="100" cy="78" r="44" fill="#ffe3ef"/>
+      <path d="M100 36 q-46 4 -44 50 q10 -22 44 -20 q34 -2 44 20 q2 -46 -44 -50Z" fill="#3a2a55"/>
+      <circle cx="86" cy="80" r="6" fill="#2b3142"/><circle cx="114" cy="80" r="6" fill="#2b3142"/>
+      <circle cx="88" cy="78" r="2" fill="#fff"/><circle cx="116" cy="78" r="2" fill="#fff"/>
+      <circle cx="80" cy="94" r="6" fill="#ff9ec4" opacity=".7"/><circle cx="120" cy="94" r="6" fill="#ff9ec4" opacity=".7"/>
+      <path d="M90 96 Q100 104 110 96" stroke="#d54e87" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <rect x="56" y="70" width="16" height="26" rx="8" fill="#ff65a3"/>
+      <rect x="128" y="70" width="16" height="26" rx="8" fill="#ff65a3"/>
+      <path d="M64 70 q36 -34 72 0" fill="none" stroke="#ff65a3" stroke-width="7"/>
+      <text x="150" y="60" font-size="22" fill="#ffd34d">♪</text>
+    </svg>`
+  },
+  {
+    id:"dino", cls:"w-dino", name:"Dinosaurios", char:"Rex", role:"Retos", intro:"¿List@ para el desafío? ¡Tú puedes superarte hoy!",
+    icon:`<svg viewBox="0 0 100 100"><circle cx="50" cy="48" r="26" fill="#5ec96f"/><path d="M40 24 l8 -10 6 10z" fill="#39a657"/><circle cx="58" cy="44" r="6" fill="#2b3142"/><circle cx="60" cy="42" r="2" fill="#fff"/><path d="M30 54 Q40 62 54 58" stroke="#2b3142" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="104" cy="178" rx="66" ry="10" fill="#000" opacity=".08"/>
+      <path d="M150 150 Q188 142 176 120 Q168 132 150 128 Z" fill="#4cb763"/>
+      <ellipse cx="108" cy="124" rx="54" ry="42" fill="#5ec96f"/>
+      <rect x="80" y="150" width="18" height="28" rx="8" fill="#4cb763"/>
+      <rect x="120" y="150" width="18" height="28" rx="8" fill="#4cb763"/>
+      <path d="M78 116 Q56 86 66 60 Q72 44 92 48 Q104 50 98 72 Q90 100 96 120 Z" fill="#5ec96f"/>
+      <circle cx="78" cy="56" r="22" fill="#6ed47f"/>
+      <circle cx="86" cy="52" r="5.5" fill="#2b3142"/><circle cx="88" cy="50" r="1.8" fill="#fff"/>
+      <path d="M60 62 Q68 70 80 66" stroke="#2b3142" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M118 84 l9 -16 8 16 z" fill="#39a657"/>
+      <path d="M134 96 l9 -16 8 16 z" fill="#39a657"/>
+      <path d="M150 110 l9 -14 7 14 z" fill="#39a657"/>
+      <circle cx="120" cy="120" r="6" fill="#bdeccb"/><circle cx="100" cy="136" r="5" fill="#bdeccb"/>
+    </svg>`
+  },
+  {
+    id:"dragon", cls:"w-dragon", name:"Dragones", char:"Draco", role:"Jefe Final", intro:"Soy el jefe final. ¡Demuestra todo lo que has aprendido!",
+    icon:`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="26" fill="#9d7bff"/><path d="M38 30 l-6 -12 11 7z" fill="#6e48aa"/><path d="M62 30 l6 -12 -11 7z" fill="#6e48aa"/><circle cx="42" cy="48" r="5" fill="#2b3142"/><circle cx="58" cy="48" r="5" fill="#2b3142"/><path d="M44 60 q6 5 12 0" stroke="#5a3e8e" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="178" rx="56" ry="9" fill="#000" opacity=".08"/>
+      <path d="M150 90 Q186 70 180 110 Q170 104 150 116 Z" fill="#7a5cff"/>
+      <path d="M70 96 Q34 72 40 112 Q52 104 72 118 Z" fill="#7a5cff"/>
+      <ellipse cx="100" cy="116" rx="46" ry="42" fill="#9d7bff"/>
+      <ellipse cx="100" cy="128" rx="28" ry="26" fill="#d8ccff"/>
+      <circle cx="100" cy="72" r="34" fill="#9d7bff"/>
+      <path d="M86 58 l-8 -16 14 8 z" fill="#6e48aa"/>
+      <path d="M114 58 l8 -16 -14 8 z" fill="#6e48aa"/>
+      <circle cx="88" cy="70" r="6" fill="#2b3142"/><circle cx="112" cy="70" r="6" fill="#2b3142"/>
+      <circle cx="90" cy="68" r="2" fill="#fff"/><circle cx="114" cy="68" r="2" fill="#fff"/>
+      <path d="M92 84 Q100 90 108 84" stroke="#5a3e8e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path d="M100 96 q-6 12 0 22 q6 -10 0 -22Z" fill="#ffae3d"/>
+      <rect x="80" y="150" width="16" height="22" rx="7" fill="#8260e6"/>
+      <rect x="104" y="150" width="16" height="22" rx="7" fill="#8260e6"/>
+    </svg>`
+  },
+  {
+    id:"cat", cls:"w-cat", name:"Gato Espacial", char:"Misi", role:"Calma", intro:"Respira hondo conmigo. Vamos con calma, sin prisa.",
+    icon:`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="#cfe0f7" opacity=".5"/><circle cx="50" cy="50" r="30" fill="none" stroke="#fff" stroke-width="4"/><circle cx="50" cy="52" r="20" fill="#ffb648"/><path d="M34 40 l2 -12 9 8z" fill="#ffb648"/><path d="M66 40 l-2 -12 -9 8z" fill="#ffb648"/><circle cx="43" cy="50" r="3.5" fill="#2b3142"/><circle cx="57" cy="50" r="3.5" fill="#2b3142"/><path d="M50 56 l-3 4h6z" fill="#ff8fae"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="180" rx="52" ry="8" fill="#000" opacity=".08"/>
+      <rect x="64" y="120" width="72" height="56" rx="26" fill="#e7edf7"/>
+      <rect x="92" y="138" width="16" height="14" rx="4" fill="#ff8fae"/>
+      <circle cx="100" cy="78" r="52" fill="#cfe0f7" opacity=".55"/>
+      <circle cx="100" cy="78" r="52" fill="none" stroke="#fff" stroke-width="6"/>
+      <path d="M70 60 l4 -22 16 14 z" fill="#ffb648"/>
+      <path d="M130 60 l-4 -22 -16 14 z" fill="#ffb648"/>
+      <circle cx="100" cy="82" r="34" fill="#ffb648"/>
+      <circle cx="88" cy="80" r="5.5" fill="#2b3142"/><circle cx="112" cy="80" r="5.5" fill="#2b3142"/>
+      <circle cx="90" cy="78" r="1.8" fill="#fff"/><circle cx="114" cy="78" r="1.8" fill="#fff"/>
+      <path d="M100 90 l-5 6 h10 z" fill="#ff8fae"/>
+      <path d="M100 96 q-8 6 -16 2 M100 96 q8 6 16 2" stroke="#2b3142" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <circle cx="150" cy="120" r="6" fill="#ffd34d"/>
+    </svg>`
+  },
+  {
+    id:"octo", cls:"w-octo", name:"Pulpo Amistoso", char:"Tako", role:"Concentración", intro:"Enfócate en una cosa a la vez. ¡Tú puedes lograrlo!",
+    icon:`<svg viewBox="0 0 100 100"><path d="M26 56 Q26 24 50 24 Q74 24 74 56 Q74 74 50 74 Q26 74 26 56Z" fill="#ff9eb6"/><path d="M34 70 q-6 14 -14 12 M50 74 q0 14 -2 16 M66 70 q6 14 14 12" stroke="#ff7e9d" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="42" cy="50" r="5" fill="#2b3142"/><circle cx="58" cy="50" r="5" fill="#2b3142"/><path d="M44 60 Q50 65 56 60" stroke="#d54e87" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+    svg:`<svg viewBox="0 0 200 200">
+      <ellipse cx="100" cy="182" rx="58" ry="8" fill="#000" opacity=".08"/>
+      <path d="M58 140 q-18 26 -30 18 q14 4 18 -6" fill="#ff8aa6"/>
+      <path d="M74 150 q-8 30 -24 30 q16 2 22 -10" fill="#ff7e9d"/>
+      <path d="M100 156 q0 34 -2 36 q10 -2 14 -14" fill="#ff8aa6"/>
+      <path d="M126 150 q8 30 24 30 q-16 2 -22 -10" fill="#ff7e9d"/>
+      <path d="M142 140 q18 26 30 18 q-14 4 -18 -6" fill="#ff8aa6"/>
+      <path d="M50 110 Q50 50 100 50 Q150 50 150 110 Q150 150 100 150 Q50 150 50 110Z" fill="#ff9eb6"/>
+      <ellipse cx="100" cy="118" rx="40" ry="24" fill="#ffd0db"/>
+      <circle cx="84" cy="96" r="9" fill="#fff"/><circle cx="116" cy="96" r="9" fill="#fff"/>
+      <circle cx="85" cy="98" r="4.5" fill="#2b3142"/><circle cx="117" cy="98" r="4.5" fill="#2b3142"/>
+      <circle cx="86.5" cy="96" r="1.5" fill="#fff"/><circle cx="118.5" cy="96" r="1.5" fill="#fff"/>
+      <circle cx="74" cy="110" r="6" fill="#ff7e9d" opacity=".55"/><circle cx="126" cy="110" r="6" fill="#ff7e9d" opacity=".55"/>
+      <path d="M92 110 Q100 118 108 110" stroke="#d54e87" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <circle cx="150" cy="66" r="4" fill="#ffd34d"/><circle cx="50" cy="70" r="3" fill="#ffd34d"/>
+    </svg>`
+  }
+];
+
+/* ---------- Niveles ---------- */
+const LEVELS = [
+  {id:"repaso", label:"Repaso ⭐", desc:"Sumas y restas hasta 20"},
+  {id:"dos",    label:"Dos dígitos 🚀", desc:"Sin llevar / sin prestar"},
+  {id:"reto",   label:"Reto 🏆", desc:"Con llevar y prestar"},
+  {id:"mix",    label:"Mezcla 🎲", desc:"Un poco de todo"}
+];
+
+/* ---------- Criaturas (distracción educativa + álbum) ----------
+   cat: "Insectos", "Artrópodos", "Otros animales" */
+const CREATURES = [
+  // --- Insectos ---
+  {id:"mosca",   emoji:"🪰", name:"Mosca",      cat:"Insectos", fact:"Las moscas saborean la comida… ¡con las patas!"},
+  {id:"abeja",   emoji:"🐝", name:"Abeja",      cat:"Insectos", fact:"La abeja baila para decir a sus amigas dónde hay flores."},
+  {id:"mariquita",emoji:"🐞",name:"Mariquita", cat:"Insectos", fact:"Sus manchitas avisan a otros: '¡no me comas!'"},
+  {id:"mariposa",emoji:"🦋", name:"Mariposa",   cat:"Insectos", fact:"Antes fue una oruga; cambió por completo su cuerpo."},
+  {id:"hormiga", emoji:"🐜", name:"Hormiga",    cat:"Insectos", fact:"Puede cargar cosas mucho más pesadas que ella."},
+  {id:"grillo",  emoji:"🦗", name:"Grillo",     cat:"Insectos", fact:"Canta frotando sus alas, no con la boca."},
+  {id:"escarabajo",emoji:"🪲",name:"Escarabajo",cat:"Insectos", fact:"Hay más tipos de escarabajos que de cualquier otro animal."},
+  {id:"oruga",   emoji:"🐛", name:"Oruga",      cat:"Insectos", fact:"Come muchísimas hojas para luego volverse mariposa."},
+  {id:"mosquito",emoji:"🦟", name:"Mosquito",   cat:"Insectos", fact:"Zumba moviendo sus alas cientos de veces por segundo."},
+  {id:"cucaracha",emoji:"🪳",name:"Cucaracha",  cat:"Insectos", fact:"Puede aguantar la respiración varios minutos."},
+  // --- Artrópodos (no insectos) ---
+  {id:"arana",   emoji:"🕷️", name:"Araña",      cat:"Artrópodos", fact:"No es insecto: tiene 8 patas y teje hilos muy resistentes."},
+  {id:"escorpion",emoji:"🦂",name:"Escorpión",  cat:"Artrópodos", fact:"¡Brilla con luz azul cuando le da luz ultravioleta!"},
+  {id:"cangrejo",emoji:"🦀", name:"Cangrejo",   cat:"Artrópodos", fact:"Camina de lado y respira con branquias."},
+  {id:"langosta",emoji:"🦞", name:"Langosta",   cat:"Artrópodos", fact:"Tiene su esqueleto por fuera, como una armadura."},
+  {id:"camaron", emoji:"🦐", name:"Camarón",    cat:"Artrópodos", fact:"Su corazón está… ¡en la cabeza!"},
+  // --- Otros animales ---
+  {id:"caracol", emoji:"🐌", name:"Caracol",    cat:"Otros animales", fact:"Lleva su casa a cuestas y avanza despacito."},
+  {id:"lombriz", emoji:"🪱", name:"Lombriz",    cat:"Otros animales", fact:"Ayuda a la tierra haciendo túneles para las plantas."},
+  {id:"rana",    emoji:"🐸", name:"Rana",       cat:"Otros animales", fact:"Salta muy lejos y bebe agua… ¡por la piel!"},
+  {id:"lagartija",emoji:"🦎",name:"Lagartija",  cat:"Otros animales", fact:"Si pierde la cola, le crece otra nueva."},
+  {id:"tortuga", emoji:"🐢", name:"Tortuga",    cat:"Otros animales", fact:"Puede vivir muchísimos años, más que las personas."},
+  {id:"erizo",   emoji:"🦔", name:"Erizo",      cat:"Otros animales", fact:"Cuando tiene miedo se hace bolita con sus púas."},
+  {id:"raton",   emoji:"🐭", name:"Ratón",      cat:"Otros animales", fact:"Sus dientes nunca dejan de crecer."},
+  {id:"murcielago",emoji:"🦇",name:"Murciélago",cat:"Otros animales", fact:"Se mueve en la oscuridad usando el sonido (el eco)."},
+  {id:"pez",     emoji:"🐠", name:"Pececito",   cat:"Otros animales", fact:"Respira el oxígeno del agua con sus branquias."}
+];
+const CREATURE_CATS = ["Insectos","Artrópodos","Otros animales"];
+let collected = Store.get("collected", {});
+function collectedCount(){ return CREATURES.filter(c=>collected[c.id]).length; }
+
+/* ============================================================
+   ÁLBUM MATEMÁGICO: cada 6 operaciones desbloquea
+   un personaje, una pegatina y una animación (nunca se quitan).
+   ============================================================ */
+const STICKERS = [
+  {id:"medalla",e:"🏅",name:"Medalla"},{id:"trofeo",e:"🏆",name:"Trofeo"},
+  {id:"estrella",e:"⭐",name:"Estrella"},{id:"cohete",e:"🚀",name:"Cohete"},
+  {id:"arcoiris",e:"🌈",name:"Arcoíris"},{id:"corona",e:"👑",name:"Corona"},
+  {id:"diamante",e:"💎",name:"Diamante"},{id:"fuego",e:"🔥",name:"Llama"},
+  {id:"rayo",e:"⚡",name:"Rayo"},{id:"corazon",e:"💙",name:"Corazón"},
+  {id:"sol",e:"☀️",name:"Sol"},{id:"luna",e:"🌙",name:"Luna"},
+  {id:"planeta",e:"🪐",name:"Planeta"},{id:"balon",e:"⚽",name:"Balón"},
+  {id:"globo",e:"🎈",name:"Globo"},{id:"regalo",e:"🎁",name:"Regalo"},
+  {id:"unicornio",e:"🦄",name:"Unicornio"},{id:"mago",e:"🧙",name:"Mago"},
+  {id:"pulpo",e:"🐙",name:"Pulpo"},{id:"dino",e:"🦕",name:"Dino"}
+];
+const ANIMS = [
+  {id:"confeti",e:"🎉",name:"Confeti"},{id:"estrellas",e:"⭐",name:"Lluvia de estrellas"},
+  {id:"fuegos",e:"🎆",name:"Fuegos artificiales"},{id:"corazones",e:"💙",name:"Corazones"},
+  {id:"burbujas",e:"🫧",name:"Burbujas"},{id:"arcoiris",e:"🌈",name:"Arcoíris mágico"}
+];
+let charsDiscovered = Store.get("charsDiscovered", {});
+let stickersOwned = Store.get("stickers", []);
+let animsOwned = Store.get("anims", []);
+let placedStickers = Store.get("stickerSheet", []);
+function saveSheet(){ Store.set("stickerSheet", placedStickers); }
+function awardPackRewards(){
+  const rw={char:null, sticker:null, anim:null};
+  if(!charsDiscovered[state.world]){ charsDiscovered[state.world]=true; Store.set("charsDiscovered",charsDiscovered); rw.char=currentWorld(); }
+  const ns=STICKERS.find(s=>!stickersOwned.includes(s.id));
+  if(ns){ stickersOwned.push(ns.id); Store.set("stickers",stickersOwned); rw.sticker=ns; }
+  const na=ANIMS.find(a=>!animsOwned.includes(a.id));
+  if(na){ animsOwned.push(na.id); Store.set("anims",animsOwned); rw.anim=na; }
+  return rw;
+}
+
+/* ---------- Lecciones de conducta ---------- */
+const LESSONS = {
+  perfect:[
+    {emoji:"🌟", t:"¡Lo lograste sin fallar!", m:"Cuando algo te sale muy bien, puedes ayudar a un amigo que apenas aprende. Compartir lo que sabes es de campeones."},
+    {emoji:"🤝", t:"Eres muy capaz", m:"Ganar es divertido. Recuerda felicitar también a los demás cuando ellos ganen."}
+  ],
+  good:[
+    {emoji:"💪", t:"¡Buen esfuerzo!", m:"Equivocarse es parte de aprender. Cada error te enseñó algo nuevo. ¡Sigue intentando!"},
+    {emoji:"🧘", t:"Respira y sigue", m:"Cuando algo es difícil, respiramos hondo, contamos hasta 3 y lo intentamos otra vez. La calma ayuda."}
+  ],
+  tough:[
+    {emoji:"🌈", t:"A veces no ganamos a la primera", m:"Y está bien. Perder o fallar no es malo: es una pista para mejorar. Lo importante es no rendirse.", breathe:true},
+    {emoji:"⏳", t:"La paciencia es un súper poder", m:"Las cosas difíciles toman tiempo. Vamos despacio, paso a paso, y lo conseguiremos."}
+  ]
+};
+
+/* Ilustraciones SVG para cada tipo de lección */
+const SCENES = {
+  perfect:`<svg viewBox="0 0 240 150">
+    <circle cx="120" cy="74" r="60" fill="#fff6e0"/>
+    <text x="58" y="46" font-size="18">⭐</text><text x="158" y="42" font-size="16">✨</text>
+    <path d="M95 50 h50 v14 a25 25 0 0 1 -50 0 z" fill="#ffd34d"/>
+    <path d="M95 52 q-16 0 -16 16 q0 11 15 13" fill="none" stroke="#ffd34d" stroke-width="6"/>
+    <path d="M145 52 q16 0 16 16 q0 11 -15 13" fill="none" stroke="#ffd34d" stroke-width="6"/>
+    <rect x="112" y="86" width="16" height="14" fill="#ffbf3d"/>
+    <rect x="98" y="100" width="44" height="11" rx="4" fill="#e0a82e"/>
+    <path d="M120 60 l3.5 7 8 1 -6 5.5 1.5 8 -7 -4 -7 4 1.5 -8 -6 -5.5 8 -1 z" fill="#fff" opacity=".95"/>
+    <text x="150" y="118" font-size="20">🎉</text><text x="74" y="120" font-size="18">😊</text>
+  </svg>`,
+  good:`<svg viewBox="0 0 240 150">
+    <circle cx="120" cy="75" r="62" fill="#eaf6ff"/>
+    <rect x="60" y="110" width="34" height="22" rx="3" fill="#bcd7f5"/>
+    <rect x="94" y="92" width="34" height="40" rx="3" fill="#9ec4ef"/>
+    <rect x="128" y="74" width="34" height="58" rx="3" fill="#7fb0e8"/>
+    <circle cx="152" cy="54" r="15" fill="#ffd34d"/>
+    <path d="M152 44 l3 6.5 7 1 -5 5 1 7 -6 -3.4 -6 3.4 1 -7 -5 -5 7 -1z" fill="#fff"/>
+    <circle cx="77" cy="99" r="10" fill="#5b86e5"/>
+    <circle cx="74" cy="97" r="1.6" fill="#fff"/><circle cx="80" cy="97" r="1.6" fill="#fff"/>
+    <text x="36" y="52" font-size="18">💪</text>
+  </svg>`,
+  tough:`<svg viewBox="0 0 240 150">
+    <circle cx="120" cy="76" r="62" fill="#f1ecff"/>
+    <path d="M70 78 a50 30 0 0 1 100 0" fill="none" stroke="#ff8aa6" stroke-width="6"/>
+    <path d="M78 78 a42 26 0 0 1 84 0" fill="none" stroke="#ffd34d" stroke-width="6"/>
+    <path d="M86 78 a34 22 0 0 1 68 0" fill="none" stroke="#9ad6a0" stroke-width="6"/>
+    <rect x="100" y="92" width="40" height="42" fill="#ffd34d"/>
+    <rect x="64" y="104" width="40" height="30" fill="#c8d2e6"/>
+    <rect x="136" y="112" width="40" height="22" fill="#e0b48a"/>
+    <text x="116" y="116" font-size="15" fill="#fff" font-weight="bold">1</text>
+    <text x="80" y="124" font-size="13" fill="#fff" font-weight="bold">2</text>
+    <text x="152" y="128" font-size="11" fill="#fff" font-weight="bold">3</text>
+    <circle cx="84" cy="92" r="12" fill="#ffd9a8"/>
+    <circle cx="80" cy="90" r="1.6" fill="#2b3142"/><circle cx="88" cy="90" r="1.6" fill="#2b3142"/>
+    <path d="M80 95 q4 4 8 0" stroke="#2b3142" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  </svg>`
+};
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+let state = {
+  world:Store.get("world", WORLDS[0].id),
+  level:Store.get("level", "mix"),
+  pack:[], idx:0, answer:"", revealed:0,
+  attempts:0, mistakes:0, correctThisPack:0,
+  totalCorrect:Store.get("totalCorrect",0),
+  packsDone:Store.get("packsDone",0),
+  streak:0, bestStreak:Store.get("bestStreak",0),
+  bugsClicked:Store.get("bugsClicked",0),
+  noGiveUp:false
+};
+
+/* ============================================================
+   INSIGNIAS
+   ============================================================ */
+const BADGES = [
+  {id:"first",   ring:"r-blue",  icon:"🎉", label:"Primera misión", test:s=>s.packsDone>=1},
+  {id:"img1",    ring:"r-purple",icon:"🖼️", label:"Imagen descubierta", test:s=>s.packsDone>=1},
+  {id:"c10",     ring:"r-green", icon:"➕", label:"10 aciertos", test:s=>s.totalCorrect>=10},
+  {id:"c25",     ring:"r-green", icon:"🔢", label:"25 aciertos", test:s=>s.totalCorrect>=25},
+  {id:"streak5", ring:"r-warm",  icon:"🔥", label:"Racha de 5", test:s=>s.bestStreak>=5},
+  {id:"bug",     ring:"r-pink",  icon:"🪰", label:"Primer animal", test:s=>s.collectedCount>=1},
+  {id:"calm",    ring:"r-blue",  icon:"🧘", label:"No me rendí", test:s=>s.noGiveUpEver},
+  {id:"packs3",  ring:"r-purple",icon:"🏅", label:"3 misiones", test:s=>s.packsDone>=3},
+  {id:"star",    ring:"r-warm",  icon:"⭐", label:"50 aciertos", test:s=>s.totalCorrect>=50},
+  {id:"col5",    ring:"r-pink",  icon:"🔍", label:"5 animales", test:s=>s.collectedCount>=5},
+  {id:"col12",   ring:"r-green", icon:"🧭", label:"12 animales", test:s=>s.collectedCount>=12},
+  {id:"colAll",  ring:"r-warm",  icon:"🏆", label:"¡Álbum completo!", test:s=>s.collectedCount>=CREATURES.length}
+];
+let earnedBadges = Store.get("earnedBadges", []);
+let noGiveUpEver = Store.get("noGiveUpEver", false);
+
+function checkBadges(){
+  const ctx = {...state, noGiveUpEver, collectedCount:collectedCount()};
+  const newly=[];
+  BADGES.forEach(b=>{
+    if(!earnedBadges.includes(b.id) && b.test(ctx)){
+      earnedBadges.push(b.id); newly.push(b);
+    }
+  });
+  if(newly.length){ Store.set("earnedBadges", earnedBadges); sndBadge(); showBadgeModal(newly); }
+}
+
+/* ============================================================
+   GENERADOR DE OPERACIONES
+   ============================================================ */
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function makeOp(levelId){
+  let kind = levelId;
+  if(levelId==="mix"){ kind = ["repaso","dos","reto"][rnd(0,2)]; }
+  let a,b,op,ans,text;
+  if(kind==="repaso"){
+    if(Math.random()<0.5){ a=rnd(2,12); b=rnd(2,Math.min(8,20-a)); op="+"; ans=a+b; }
+    else { a=rnd(6,20); b=rnd(1,a-1); op="−"; ans=a-b; }
+  } else if(kind==="dos"){
+    if(Math.random()<0.5){ // suma sin llevar
+      const u1=rnd(1,4),u2=rnd(1,5-u1), d1=rnd(1,5),d2=rnd(1,9-d1);
+      a=d1*10+u1; b=d2*10+u2; op="+"; ans=a+b;
+    } else { // resta sin prestar
+      const d1=rnd(4,9), u1=rnd(2,9), d2=rnd(1,d1-1), u2=rnd(0,u1);
+      a=d1*10+u1; b=d2*10+u2; op="−"; ans=a-b;
+    }
+  } else { // reto: con llevar / prestar
+    if(Math.random()<0.5){ a=rnd(14,59); b=rnd(14,40); op="+"; ans=a+b; }
+    else { a=rnd(31,89); b=rnd(12,a-5); op="−"; ans=a-b; }
+  }
+  text = a+" "+op+" "+b+" =";
+  return {a, b, op, text, ans};
+}
+function makePack(levelId){
+  const arr=[]; for(let i=0;i<6;i++) arr.push(makeOp(levelId)); return arr;
+}
+
+/* ============================================================
+   RENDER: HOME
+   ============================================================ */
+const $ = id=>document.getElementById(id);
+/* Aviso breve en pantalla */
+function toast(msg){
+  const t=document.createElement("div"); t.className="pwr-toast"; t.style.maxWidth="80vw"; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition="opacity .3s"; t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 1700);
+}
+/* Si una imagen falta o falla al cargar, volvemos al dibujo SVG */
+function worldFallback(el,id,kind){
+  const w=WORLDS.find(x=>x.id===id); if(!w) return;
+  el.outerHTML = (kind==='icon') ? w.icon : w.svg;
+}
+function worldUnlocked(i){ return i===0 || !!charsDiscovered[WORLDS[i-1].id]; }
+function renderWorlds(){
+  const wp=$("worldPicker"); wp.innerHTML="";
+  // asegurar que el mundo elegido esté desbloqueado (si no, el más avanzado disponible)
+  const sel=WORLDS.findIndex(w=>w.id===state.world);
+  if(sel<0 || !worldUnlocked(sel)){
+    let last=0; for(let i=0;i<WORLDS.length;i++){ if(worldUnlocked(i)) last=i; }
+    state.world=WORLDS[last].id; Store.set("world",state.world);
+  }
+  WORLDS.forEach((w,i)=>{
+    const b=document.createElement("button");
+    const unlocked=worldUnlocked(i), done=!!charsDiscovered[w.id];
+    if(!unlocked){
+      b.className="world locked";
+      b.innerHTML=`<div class="qmarkbig">❓</div><div class="wname">???</div><div class="wchar lockhint">🔒 Completa "${WORLDS[i-1].name}"</div>`;
+      b.onclick=()=>toast(`🔒 Termina "${WORLDS[i-1].name}" para desbloquear este mundo.`);
+    } else {
+      b.className="world "+w.cls+(state.world===w.id?" sel":"");
+      const src=w.img||IMAGES[w.id];
+      const vis = src ? `<img class="wimg" src="${src}" alt="" onerror="worldFallback(this,'${w.id}','icon')">` : w.icon;
+      b.innerHTML = (done?`<div class="donecheck">✓</div>`:"") + vis + `<div class="wname">${w.name}</div><div class="wchar">${w.char} · ${w.role}</div>`;
+      if(state.world===w.id) b.style.outline="4px solid rgba(255,255,255,.85)";
+      b.onclick=()=>{ state.world=w.id; Store.set("world",w.id); renderWorlds(); };
+    }
+    wp.appendChild(b);
+  });
+}
+function renderLevels(){
+  const lc=$("levelChips"); lc.innerHTML="";
+  LEVELS.forEach(l=>{
+    const c=document.createElement("button");
+    c.className="chip"+(state.level===l.id?" active":"");
+    c.innerHTML = l.label+`<div style="font-weight:normal;font-size:12px">${l.desc}</div>`;
+    c.onclick=()=>{ state.level=l.id; Store.set("level",l.id); renderLevels(); };
+    lc.appendChild(c);
+  });
+}
+
+/* ============================================================
+   RENDER: JUEGO
+   ============================================================ */
+function currentWorld(){ return WORLDS.find(w=>w.id===state.world); }
+function startPack(){
+  state.pack = makePack(state.level);
+  state.idx=0; state.answer=""; state.revealed=0;
+  state.correctThisPack=0; state.mistakes=0; state.noGiveUp=true;
+  state.inv={};
+  const w=currentWorld();
+  const cs=w.img||IMAGES[w.id];
+  $("charSvg").innerHTML = cs ? `<img class="charimg" src="${cs}" alt="" onerror="worldFallback(this,'${w.id}','svg')">` : w.svg;
+  $("charName").textContent="";
+  buildTiles();
+  buildKeypad();
+  $("home").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  $("levelLabel").textContent = (LEVELS.find(l=>l.id===state.level)||{}).label||"";
+  setNiloAvatars();
+  niloSay(`Hoy te acompaña ${w.char} (${w.role}). ${w.intro} 🦦`,"happy");
+  showQuestion();
+  scheduleFly();
+  startRace();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Carrera: tú (aciertos) vs liebre (tiempo) ---------- */
+let raceTimer=null;
+function raceMsPerOp(){ return settings.racePace==="rapida"?11000 : settings.racePace==="normal"?16000 : 24000; }
+function setCar(id,frac){ const el=$(id); if(el) el.style.left=(6+Math.max(0,Math.min(1,frac))*86)+"%"; }
+function childPos(){ return Math.min(1, state.idx/6 + (state.childBoost||0)); }
+function startRace(){
+  clearInterval(raceTimer);
+  $("raceWrap").style.display = settings.race ? "" : "none";
+  state.raceLost=false; state.raceWon=false; state.raceDecided=false;
+  state.childBoost=0; state.harePos=0; state.raceLast=Date.now();
+  state.hareFreezeUntil=0; state.hareSlowUntil=0;
+  if(!settings.race){ renderPowerups(); return; }
+  setCar("carCpu",0);
+  setCar("carYou", childPos());
+  $("raceMsg").textContent="";
+  renderPowerups();
+  raceTimer=setInterval(tickRace,150);
+}
+function tickRace(){
+  if(state.raceDecided) return;
+  const now=Date.now();
+  let dt=now-(state.raceLast||now); state.raceLast=now; if(dt<0) dt=0;
+  let mult=1;
+  if(now < (state.hareFreezeUntil||0)) mult=0;
+  else if(now < (state.hareSlowUntil||0)) mult=0.4;
+  state.harePos=Math.min(1,(state.harePos||0)+(dt/(6*raceMsPerOp()))*mult);
+  setCar("carCpu", state.harePos);
+  checkRaceOutcome();
+}
+function checkRaceOutcome(){
+  if(state.raceDecided || !settings.race) return;
+  if(childPos()>=1){
+    state.raceDecided=true; state.raceWon=true; stopRace();
+    $("raceMsg").textContent="🏁 ¡Le ganaste a la liebre!"; $("raceMsg").style.color="#16a06f";
+  } else if((state.harePos||0)>=1){
+    state.raceDecided=true; state.raceLost=true; stopRace();
+    $("raceMsg").textContent="🐇 La liebre llegó. ¡Termina con calma! 💪"; $("raceMsg").style.color="#e08a18";
+  }
+}
+function updateRaceChild(){ if(settings.race){ setCar("carYou", childPos()); checkRaceOutcome(); } }
+function stopRace(){ clearInterval(raceTimer); }
+
+/* ---------- Caja sorpresa: 8 power-ups ---------- */
+const POWERUPS=[
+  {id:"turbo",  e:"🚀", n:"Turbo",         d:"¡Aceleras! +1 tramo"},
+  {id:"star",   e:"⭐", n:"Estrella",      d:"¡Súper impulso! +2 tramos"},
+  {id:"rainbow",e:"🌈", n:"Salto arcoíris",d:"Saltas a mitad de lo que falta"},
+  {id:"magnet", e:"🧲", n:"Imán",          d:"+1 tramo y frena a la liebre"},
+  {id:"banana", e:"🍌", n:"Plátano",       d:"La liebre resbala 1 tramo atrás"},
+  {id:"shell",  e:"🐢", n:"Caparazón",     d:"La liebre retrocede 2 tramos"},
+  {id:"ice",    e:"🧊", n:"Hielo",         d:"Congela a la liebre 6 segundos"},
+  {id:"slow",   e:"🐌", n:"Cámara lenta",  d:"La liebre va lenta 8 segundos"}
+];
+function pwrAddChild(f){ state.childBoost=(state.childBoost||0)+f; updateRaceChild(); }
+function pwrHareBack(f){ state.harePos=Math.max(0,(state.harePos||0)-f); setCar("carCpu",state.harePos); }
+function drawPowerup(){
+  const p=POWERUPS[rnd(0,POWERUPS.length-1)];
+  state.inv[p.id]=(state.inv[p.id]||0)+1;
+  renderPowerups();
+  showDrawToast(p);
+  sndBadge();
+}
+function renderPowerups(){
+  const el=$("powerups"); if(!el) return;
+  if(!settings.race){ el.style.display="none"; el.innerHTML=""; return; }
+  el.style.display="";
+  const owned=POWERUPS.filter(p=>state.inv && state.inv[p.id]>0);
+  if(!owned.length){ el.innerHTML=`<span class="powerhint">🎁 Resuelve para ganar power-ups</span>`; return; }
+  el.innerHTML=owned.map(p=>`<button class="pwr" onclick="usePowerup('${p.id}')" title="${p.n}: ${p.d}">${p.e}<span class="cnt">${state.inv[p.id]}</span></button>`).join("");
+}
+function usePowerup(id){
+  if(!state.inv || !state.inv[id] || state.raceDecided) return;
+  const tramo=1/6, now=Date.now();
+  switch(id){
+    case "turbo":   pwrAddChild(tramo); break;
+    case "star":    pwrAddChild(2*tramo); break;
+    case "rainbow": pwrAddChild((1-childPos())/2); break;
+    case "magnet":  pwrAddChild(tramo); state.hareSlowUntil=now+3000; break;
+    case "banana":  pwrHareBack(tramo); break;
+    case "shell":   pwrHareBack(2*tramo); break;
+    case "ice":     state.hareFreezeUntil=now+6000; break;
+    case "slow":    state.hareSlowUntil=now+8000; break;
+  }
+  state.inv[id]--; renderPowerups();
+  const p=POWERUPS.find(x=>x.id===id);
+  $("raceMsg").textContent=`${p.e} ${p.d}`; $("raceMsg").style.color="#3f7cf0";
+  sndReveal();
+}
+function showDrawToast(p){
+  const t=document.createElement("div");
+  t.className="pwr-toast";
+  t.innerHTML=`<span class="pe">🎁 ${p.e}</span>¡Sacaste ${p.n}!<div style="font-weight:normal;font-size:13px;color:#6b7a99;margin-top:4px">${p.d}</div>`;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition="opacity .3s"; t.style.opacity="0"; setTimeout(()=>t.remove(),300); }, 1300);
+}
+
+function buildTiles(){
+  const g=$("tileGrid"); g.innerHTML="";
+  for(let i=0;i<6;i++){ const t=document.createElement("div"); t.className="tile"; t.dataset.i=i; t.textContent="?"; g.appendChild(t); }
+}
+function buildKeypad(){
+  const k=$("keypad"); k.innerHTML="";
+  ["1","2","3","4","5","6","7","8","9","del","0","ok"].forEach(key=>{
+    const b=document.createElement("button");
+    if(key==="del"){ b.className="key del"; b.textContent="⌫"; b.onclick=()=>{state.answer=state.answer.slice(0,-1); paintAnswer();}; }
+    else if(key==="ok"){ b.className="key ok"; b.textContent="✓"; b.onclick=submit; }
+    else { b.className="key"; b.textContent=key; b.onclick=()=>{ const mx=(state.pack[state.idx]&&state.pack[state.idx].w)||3; if(state.answer.length<mx){state.answer+=key; paintAnswer(); tone(520,.05,"sine",.03);} }; }
+    k.appendChild(b);
+  });
+}
+function showQuestion(){
+  const q=state.pack[state.idx];
+  state.answer=""; state.attempts=0;
+  renderVertical(q);
+  $("packProgress").textContent=`Operación ${state.idx+1} de 6`;
+  $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
+  $("answerBox").className="answer-box";
+  $("feedback").textContent="";
+  $("feedback").className="feedback";
+  paintAnswer();
+}
+
+/* Dibuja la operación en columna y calcula la ayuda visual
+   (llevada en sumas, préstamo en restas). */
+function renderVertical(q){
+  const W=Math.max(String(q.a).length, String(q.b).length, String(q.ans).length);
+  q.w=W;
+  const aD=String(q.a).padStart(W," ").split("");
+  const bD=String(q.b).padStart(W," ").split("");
+  const help=new Array(W).fill(null);   // {cls,txt} encima de cada columna
+  const strike=new Array(W).fill(false);
+  let legend="";
+
+  if(settings.showCarry){
+    if(q.op==="+"){
+      // llevada: sumamos columna por columna de derecha a izquierda
+      let carry=0;
+      for(let i=W-1;i>=0;i--){
+        const s=(parseInt(aD[i])||0)+(parseInt(bD[i])||0)+carry;
+        if(s>=10 && i>0){ carry=1; help[i-1]={cls:"carry",txt:"1"}; }
+        else carry=0;
+      }
+      if(help.some(h=>h)) legend="🟠 La llevada: ese 1 se suma a la columna de al lado.";
+    } else {
+      // préstamo: si la cifra de arriba es menor, pedimos prestado a la izquierda
+      const aN=String(q.a).padStart(W,"0").split("").map(Number);
+      const bN=String(q.b).padStart(W,"0").split("").map(Number);
+      for(let i=W-1;i>=0;i--){
+        if(aN[i]<bN[i] && i>0){
+          help[i]={cls:"newtop",txt:"1"};        // el 10 prestado, frente a la unidad
+          strike[i-1]=true;
+          aN[i-1]-=1;
+          help[i-1]={cls:"newtop",txt:String(aN[i-1])}; // dígito reducido, en verde
+          aN[i]+=10;
+        }
+      }
+      if(help.some(h=>h)) legend="🟢 El préstamo: la decena de al lado presta 10 a la unidad.";
+    }
+  }
+
+  // ---- construir la grilla de la operación ----
+  const tpl=`38px repeat(${W},48px)`;
+  $("vopGrid").style.gridTemplateColumns=tpl;
+  $("answerBox").style.gridTemplateColumns=tpl;
+
+  let html="";
+  // fila de ayuda (llevada/préstamo)
+  html+=`<div class="vc help sign"></div>`;
+  for(let i=0;i<W;i++){
+    if(help[i]) html+=`<div class="vc help ${help[i].cls}">${help[i].txt}</div>`;
+    else html+=`<div class="vc help"></div>`;
+  }
+  // fila A (número de arriba, con posible tachado)
+  html+=`<div class="vc sign"></div>`;
+  for(let i=0;i<W;i++){
+    const d=aD[i]===" "?"":aD[i];
+    html+=`<div class="vc ${strike[i]?'strike':''}">${d}</div>`;
+  }
+  // fila B (signo + número de abajo)
+  html+=`<div class="vc sign">${q.op}</div>`;
+  for(let i=0;i<W;i++){
+    const d=bD[i]===" "?"":bD[i];
+    html+=`<div class="vc">${d}</div>`;
+  }
+  $("vopGrid").innerHTML=html;
+  $("helpLegend").textContent=legend;
+}
+
+function paintAnswer(){
+  const q=state.pack[state.idx];
+  const W=(q&&q.w)||1;
+  let html=`<div class="vc sign"></div>`;
+  if(state.answer===""){
+    for(let i=0;i<W;i++) html+=`<div class="vc ans ${i===W-1?'qmark':''}">${i===W-1?'?':''}</div>`;
+  } else {
+    const digits=String(state.answer).padStart(W," ").slice(-W).split("");
+    for(let i=0;i<W;i++) html+=`<div class="vc ans">${digits[i]===" "?"":digits[i]}</div>`;
+  }
+  $("answerBox").innerHTML=html;
+}
+
+function submit(){
+  if(state.answer==="") return;
+  const q=state.pack[state.idx];
+  const val=parseInt(state.answer,10);
+  if(val===q.ans){
+    // correcto
+    $("answerBox").className="answer-box good win";
+    $("feedback").textContent="";
+    niloSay(NILO_PRAISE[rnd(0,NILO_PRAISE.length-1)], "happy");
+    sndGood();
+    state.totalCorrect++; Store.set("totalCorrect",state.totalCorrect);
+    state.correctThisPack++;
+    state.streak++; if(state.streak>state.bestStreak){state.bestStreak=state.streak; Store.set("bestStreak",state.bestStreak);}
+    revealTile(state.idx);
+    burstConfetti(8);
+    playCorrectAnim();
+    state.idx++;
+    updateRaceChild();
+    if(settings.race && !state.raceDecided && state.idx<6 && Math.random()<0.55) drawPowerup();
+    setTimeout(()=>{
+      if(state.idx>=6){ finishPack(); }
+      else { showQuestion(); }
+    }, 850);
+  } else {
+    // incorrecto: amable, sin castigo
+    state.attempts++; state.mistakes++; state.streak=0;
+    $("answerBox").className="answer-box bad";
+    sndOops();
+    niloSay(NILO_GENTLE[rnd(0,NILO_GENTLE.length-1)], "warm");
+    let msg;
+    if(state.attempts===1) msg="Casi… inténtalo otra vez 💛";
+    else if(state.attempts===2) msg="Cuenta despacio y prueba de nuevo 🌈";
+    else msg=`Pista: la respuesta empieza por ${(""+q.ans)[0]}…`;
+    $("feedback").className="feedback warm";
+    $("feedback").textContent=msg;
+    setTimeout(()=>{ state.answer=""; paintAnswer(); $("answerBox").className="answer-box"; }, 700);
+  }
+}
+function revealTile(i){
+  const tiles=$("tileGrid").querySelectorAll(".tile");
+  // revelar en orden visual variado
+  const order=[0,2,4,1,5,3];
+  const t=tiles[order[i]];
+  if(t){
+    t.classList.add("gone");
+    if(!settings.reduceMotion && t.animate){
+      t.animate([{transform:"scale(1)"},{transform:"scale(1.3)"},{transform:"scale(1)"}],{duration:420,easing:"ease-out"});
+    }
+  }
+  state.revealed++;
+  sndReveal();
+}
+
+/* Animación alegre al acertar: rebote del personaje + estrellas que suben */
+function playCorrectAnim(){
+  if(settings.reduceMotion) return;
+  const stage=document.querySelector(".reveal-stage");
+  if(stage && stage.animate){
+    stage.animate([{transform:"scale(1)"},{transform:"scale(1.06)"},{transform:"scale(1)"}],{duration:500,easing:"ease-out"});
+  }
+  const box=$("answerBox").getBoundingClientRect();
+  const icons=["⭐","✨","🌟","🎉","💫"];
+  for(let i=0;i<7;i++){
+    const s=document.createElement("div");
+    s.className="reward-pop";
+    s.textContent=icons[rnd(0,icons.length-1)];
+    s.style.left=(box.left+box.width/2+rnd(-46,46))+"px";
+    s.style.top=(box.top+rnd(-8,8))+"px";
+    document.body.appendChild(s);
+    const up=rnd(120,190);
+    s.animate([
+      {transform:"translateY(0) scale(.4)",opacity:0},
+      {transform:`translateY(-${up*0.45}px) scale(1.2)`,opacity:1,offset:.4},
+      {transform:`translateY(-${up}px) scale(.85)`,opacity:0}
+    ],{duration:rnd(800,1200),easing:"ease-out"}).onfinish=()=>s.remove();
+  }
+}
+function finishPack(){
+  stopRace();
+  state.raceDecided=true;
+  setCar("carYou",1);
+  if(settings.race && !state.raceLost){ state.raceWon=true; $("raceMsg").textContent="🏁 ¡Le ganaste a la liebre!"; $("raceMsg").style.color="#16a06f"; }
+  state.packsDone++; Store.set("packsDone",state.packsDone);
+  if(state.noGiveUp){ noGiveUpEver=true; Store.set("noGiveUpEver",true); }
+  const w=currentWorld();
+  $("charName").textContent="¡Es "+w.char+"!";
+  niloSay("¡Llegamos a la meta! Lo hiciste muy bien 🎉🦦","happy");
+  // Recompensas del Álbum Matemágico (nunca se quitan)
+  state.lastRewards = awardPackRewards();
+  // ¿se desbloqueó un mundo nuevo?
+  const ci=WORLDS.findIndex(x=>x.id===state.world);
+  if(state.lastRewards.char && ci>=0 && ci+1<WORLDS.length){ state.lastRewards.newWorld = WORLDS[ci+1].name; }
+  playAnim(state.lastRewards.anim ? state.lastRewards.anim.id : (animsOwned[animsOwned.length-1]||"confeti"));
+  sndBadge();
+  // primero mostramos al personaje un momento, luego lección
+  setTimeout(()=>{ showLesson(); }, 1300);
+  checkBadges();
+}
+
+/* ---------- Animaciones desbloqueables ---------- */
+function playAnim(id){
+  if(settings.reduceMotion) return;
+  switch(id){
+    case "confeti":   burstConfetti(60); break;
+    case "estrellas": animRain("⭐",26); break;
+    case "fuegos":    animFireworks(5); break;
+    case "corazones": animFloatUp("💙",18); break;
+    case "burbujas":  animBubbles(22); break;
+    case "arcoiris":  animRainbow(); break;
+    default:          burstConfetti(50);
+  }
+}
+function animRain(ch,n){
+  for(let i=0;i<n;i++){ const d=document.createElement("div");
+    d.style.cssText=`position:fixed;z-index:77;pointer-events:none;font-size:${rnd(18,30)}px;left:${rnd(2,96)}vw;top:-30px`;
+    d.textContent=ch; document.body.appendChild(d);
+    d.animate([{transform:"translateY(0) rotate(0)",opacity:1},{transform:`translateY(${window.innerHeight+60}px) rotate(${rnd(-180,180)}deg)`,opacity:.9}],
+      {duration:rnd(1400,2600),easing:"ease-in",delay:rnd(0,500)}).onfinish=()=>d.remove();
+  }
+}
+function animFloatUp(ch,n){
+  for(let i=0;i<n;i++){ const d=document.createElement("div");
+    d.style.cssText=`position:fixed;z-index:77;pointer-events:none;font-size:${rnd(18,32)}px;left:${rnd(5,95)}vw;bottom:-30px`;
+    d.textContent=ch; document.body.appendChild(d);
+    d.animate([{transform:"translateY(0)",opacity:0},{opacity:1,offset:.2},{transform:`translateY(-${window.innerHeight+60}px)`,opacity:0}],
+      {duration:rnd(1800,3000),easing:"ease-out",delay:rnd(0,600)}).onfinish=()=>d.remove();
+  }
+}
+function animBubbles(n){
+  for(let i=0;i<n;i++){ const s=rnd(10,26); const d=document.createElement("div");
+    d.style.cssText=`position:fixed;z-index:77;pointer-events:none;width:${s}px;height:${s}px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,rgba(120,190,255,.5));border:1px solid rgba(255,255,255,.7);left:${rnd(3,96)}vw;bottom:-30px`;
+    document.body.appendChild(d);
+    d.animate([{transform:"translateY(0)",opacity:0},{opacity:1,offset:.15},{transform:`translateY(-${window.innerHeight+60}px) translateX(${rnd(-40,40)}px)`,opacity:0}],
+      {duration:rnd(2000,3400),easing:"ease-out",delay:rnd(0,700)}).onfinish=()=>d.remove();
+  }
+}
+function animFireworks(n){
+  const colors=["#3f7cf0","#7c5cff","#27c08a","#ffb13d","#ff7eb6"];
+  for(let k=0;k<n;k++){ setTimeout(()=>{ const cx=rnd(15,85), cy=rnd(12,52);
+    for(let i=0;i<14;i++){ const ang=(Math.PI*2*i)/14, dist=rnd(40,90); const d=document.createElement("div");
+      d.style.cssText=`position:fixed;z-index:77;pointer-events:none;width:8px;height:8px;border-radius:50%;left:${cx}vw;top:${cy}vh;background:${colors[rnd(0,colors.length-1)]}`;
+      document.body.appendChild(d);
+      d.animate([{transform:"translate(0,0)",opacity:1},{transform:`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px)`,opacity:0}],
+        {duration:rnd(700,1100),easing:"ease-out"}).onfinish=()=>d.remove();
+    }
+  }, k*250); }
+}
+function animRainbow(){
+  const d=document.createElement("div");
+  d.style.cssText="position:fixed;z-index:76;left:0;top:0;bottom:0;width:60vw;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(255,94,98,.45),rgba(255,211,77,.45),rgba(123,216,143,.45),rgba(54,209,220,.45),rgba(124,92,255,.45),transparent)";
+  document.body.appendChild(d);
+  d.animate([{transform:"translateX(-70vw)"},{transform:"translateX(170vw)"}],{duration:1500,easing:"ease-in-out"}).onfinish=()=>d.remove();
+}
+
+/* ============================================================
+   LECCIÓN DE CONDUCTA
+   ============================================================ */
+function showLesson(){
+  let key;
+  if(state.mistakes===0) key="perfect";
+  else if(state.mistakes<=2) key="good";
+  else key="tough";
+  // Si la liebre llegó primero, la lección es de tolerancia a perder
+  if(state.raceLost) key="tough";
+  const bucket=LESSONS[key];
+  const L=bucket[rnd(0,bucket.length-1)];
+  const acc = `Acertaste ${state.correctThisPack} de 6.`;
+  modal(`
+    <div class="lesson-nilo">${niloAvatarHTML()}</div>
+    <div class="lesson-img">${SCENES[key]}</div>
+    <h2>${L.emoji} ${L.t}</h2>
+    ${L.breathe?'<div class="breath"></div><p class="lead">Inhala mientras crece… exhala mientras baja.</p>':''}
+    <p class="lead">${L.m}</p>
+    <div class="bugfact" style="background:#eafaf3;color:#16a06f;text-align:center;font-weight:bold">${acc}</div>
+    ${rewardsHTML()}
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-good" id="lessonNext">▶ Otra misión</button>
+      <button class="btn btn-ghost" id="lessonAlbum">🎴 Álbum</button>
+      <button class="btn btn-ghost" id="lessonHome">🏠 Inicio</button>
+    </div>
+  `);
+  $("lessonNext").onclick=()=>{ closeModal(); startPack(); };
+  $("lessonAlbum").onclick=()=>{ closeModal(); showMagicAlbum(); };
+  $("lessonHome").onclick=()=>{ closeModal(); goHome(); };
+}
+
+/* ---------- Álbum Matemágico: vista y recompensas ---------- */
+function worldThumb(w){
+  const src=w.img||IMAGES[w.id];
+  return src ? `<img src="${src}" alt="" onerror="worldFallback(this,'${w.id}','icon')">` : w.icon;
+}
+function rewardsHTML(){
+  const r=state.lastRewards; if(!r) return "";
+  const parts=[];
+  if(r.char)    parts.push(`<div class="rw"><div class="rwico">${worldThumb(r.char)}</div><div class="rwlbl">Personaje<br><b>${r.char.char.split(',')[0]}</b></div></div>`);
+  if(r.sticker) parts.push(`<div class="rw"><div class="rwico">${r.sticker.e}</div><div class="rwlbl">Pegatina<br><b>${r.sticker.name}</b></div></div>`);
+  if(r.anim)    parts.push(`<div class="rw"><div class="rwico">${r.anim.e}</div><div class="rwlbl">Animación<br><b>${r.anim.name}</b></div></div>`);
+  if(!parts.length && !r.newWorld) return "";
+  const nw = r.newWorld ? `<div style="margin-top:8px;font-weight:bold">🔓 ¡Nuevo mundo desbloqueado: ${r.newWorld}!</div>` : "";
+  return `<div class="bugfact" style="background:#f3ecff;color:#5a3e8e"><b>🎴 ¡Desbloqueaste para tu Álbum Matemágico!</b><div class="rwrow">${parts.join("")}</div>${nw}</div>`;
+}
+function showMagicAlbum(){
+  let chars=`<div class="album-cat">🦦 Personajes (${WORLDS.filter(w=>charsDiscovered[w.id]).length}/${WORLDS.length})</div><div class="magic-grid">`;
+  WORLDS.forEach(w=>{ const got=!!charsDiscovered[w.id];
+    chars+=`<div class="mcard ${got?'got':''}"><div class="mi">${got?worldThumb(w):'❓'}</div><div class="mn">${got?w.char.split(',')[0]:'???'}</div></div>`;
+  });
+  chars+=`</div>`;
+  let stk=`<div class="album-cat">✨ Pegatinas (${stickersOwned.length}/${STICKERS.length})</div><div class="magic-grid">`;
+  STICKERS.forEach(s=>{ const got=stickersOwned.includes(s.id);
+    stk+=`<div class="mcard ${got?'got':''}"><div class="mi">${got?s.e:'❓'}</div><div class="mn">${got?s.name:'???'}</div></div>`;
+  });
+  stk+=`</div>`;
+  let an=`<div class="album-cat">🎬 Animaciones (${animsOwned.length}/${ANIMS.length})</div><div class="animlist">`;
+  ANIMS.forEach(a=>{ const got=animsOwned.includes(a.id);
+    an+=`<div class="animrow ${got?'got':''}"><span class="anm">${got?(a.e+' '+a.name):'❓ ???'}</span>${got?`<button class="anbtn" onclick="playAnim('${a.id}')">▶ Ver</button>`:`<span class="anlock">🔒</span>`}</div>`;
+  });
+  an+=`</div>`;
+  modal(`
+    <div class="big">🎴</div>
+    <h2>Álbum Matemágico</h2>
+    <p class="lead">Cada 6 operaciones desbloqueas premios nuevos. ¡Nunca se pierden!</p>
+    ${chars}${stk}
+    <button class="btn btn-good" id="openSheet" style="width:100%;margin:2px 0 4px">✋ Pegar pegatinas en mi lámina</button>
+    ${an}
+    <button class="btn btn-primary" id="closeMagic" style="width:100%;position:sticky;bottom:-2px;margin-top:10px">Cerrar</button>
+  `);
+  $("openSheet").onclick=()=>{ closeModal(); showStickerSheet(); };
+  $("closeMagic").onclick=closeModal;
+  $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
+/* ---------- Lámina de pegatinas: arrastrar y soltar (mouse + touch) ---------- */
+function emojiOf(id){ const s=STICKERS.find(x=>x.id===id); return s?s.e:"⭐"; }
+function clamp01(v){ return Math.max(0.03, Math.min(0.97, v)); }
+function showStickerSheet(){
+  $("modalMount").innerHTML=`<div class="overlay"><div class="modal sheetmodal">
+    <h2>✋ Mi lámina de pegatinas</h2>
+    <p class="lead">Arrastra una pegatina de la izquierda a la lámina. Para quitarla, suéltala en el bote 🗑️.</p>
+    <div class="sheetwrap">
+      <div class="sheettray" id="sheetTray"></div>
+      <div class="sheetboard" id="sheetBoard"></div>
+    </div>
+    <div class="sheetfoot">
+      <div class="sheettrash" id="sheetTrash">🗑️ Quitar</div>
+      <button class="btn btn-primary" id="closeSheet" style="flex:1">Listo</button>
+    </div>
+  </div></div>`;
+  $("closeSheet").onclick=closeModal;
+  renderSheet();
+}
+function renderSheet(){
+  const tray=$("sheetTray"), board=$("sheetBoard");
+  if(!tray||!board) return;
+  tray.innerHTML = stickersOwned.length
+    ? stickersOwned.map(id=>`<div class="traysticker" onpointerdown="sheetGrabNew(event,'${id}')">${emojiOf(id)}</div>`).join("")
+    : `<div class="trayhint">Gana pegatinas resolviendo 🎴</div>`;
+  board.innerHTML = placedStickers.map((p,i)=>`<div class="placed" style="left:${p.x*100}%;top:${p.y*100}%" onpointerdown="sheetGrabPlaced(event,${i})">${emojiOf(p.id)}</div>`).join("");
+}
+let sheetState=null, sheetGhost=null;
+function sheetGhostMake(id,e){ sheetGhost=document.createElement("div"); sheetGhost.className="sheetdrag"; sheetGhost.textContent=emojiOf(id); document.body.appendChild(sheetGhost); sheetGhostPos(e); }
+function sheetGhostPos(e){ if(sheetGhost){ sheetGhost.style.left=e.clientX+"px"; sheetGhost.style.top=e.clientY+"px"; } }
+function sheetGrabNew(e,id){ e.preventDefault(); sheetState={mode:"new",id}; sheetGhostMake(id,e); }
+function sheetGrabPlaced(e,idx){ e.preventDefault(); sheetState={mode:"move",idx,id:placedStickers[idx].id}; sheetGhostMake(placedStickers[idx].id,e); }
+function sheetMove(e){
+  if(!sheetState) return;
+  sheetGhostPos(e);
+  const tr=$("sheetTrash"); if(tr){ const r=tr.getBoundingClientRect(); tr.classList.toggle("hot", e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom); }
+}
+function sheetDrop(e){
+  if(!sheetState) return;
+  const board=$("sheetBoard"), trash=$("sheetTrash");
+  if(!board){ sheetCleanup(); return; }
+  const br=board.getBoundingClientRect();
+  const overBoard = e.clientX>=br.left&&e.clientX<=br.right&&e.clientY>=br.top&&e.clientY<=br.bottom;
+  let overTrash=false; if(trash){ const tr=trash.getBoundingClientRect(); overTrash=e.clientX>=tr.left&&e.clientX<=tr.right&&e.clientY>=tr.top&&e.clientY<=tr.bottom; }
+  const x=clamp01((e.clientX-br.left)/br.width), y=clamp01((e.clientY-br.top)/br.height);
+  if(sheetState.mode==="new"){
+    if(overBoard&&!overTrash){ placedStickers.push({id:sheetState.id,x,y}); saveSheet(); tone(720,.08,"sine",.04); }
+  } else {
+    if(overTrash){ placedStickers.splice(sheetState.idx,1); saveSheet(); sndOops(); }
+    else if(overBoard){ placedStickers[sheetState.idx].x=x; placedStickers[sheetState.idx].y=y; saveSheet(); }
+  }
+  sheetCleanup(); renderSheet();
+}
+function sheetCleanup(){ if(sheetGhost){ sheetGhost.remove(); sheetGhost=null; } const tr=$("sheetTrash"); if(tr) tr.classList.remove("hot"); sheetState=null; }
+
+/* ============================================================
+   MODALES
+   ============================================================ */
+function modal(html){
+  const m=$("modalMount");
+  m.innerHTML=`<div class="overlay"><div class="modal">${html}</div></div>`;
+}
+function closeModal(){ $("modalMount").innerHTML=""; }
+
+function showBadgeModal(list){
+  const items=list.map(b=>`
+    <div class="badge earned ${b.ring}" style="margin:0 8px">
+      <div class="ring"><div class="inner">${b.icon}</div></div>
+      <div class="blabel">${b.label}</div>
+    </div>`).join("");
+  // se apila por encima de la lección si coincide
+  const extra=document.createElement("div");
+  extra.className="overlay"; extra.style.zIndex=90;
+  extra.innerHTML=`<div class="modal">
+    <div class="big">🏅</div>
+    <h2>¡Insignia nueva!</h2>
+    <div style="display:flex;justify-content:center;flex-wrap:wrap;margin:14px 0">${items}</div>
+    <button class="btn btn-primary" style="width:100%">¡Genial!</button>
+  </div>`;
+  extra.querySelector("button").onclick=()=>extra.remove();
+  document.body.appendChild(extra);
+}
+
+function showBadges(){
+  const ctx={...state, noGiveUpEver};
+  const grid=BADGES.map(b=>{
+    const got=earnedBadges.includes(b.id)||b.test(ctx);
+    return `<div class="badge ${got?'earned':''} ${b.ring}">
+      <div class="ring"><div class="inner">${b.icon}</div></div>
+      <div class="blabel">${b.label}</div></div>`;
+  }).join("");
+  const earnedCount=BADGES.filter(b=>earnedBadges.includes(b.id)||b.test(ctx)).length;
+  modal(`
+    <div class="big">🏅</div>
+    <h2>Mis insignias</h2>
+    <p class="lead">${earnedCount} de ${BADGES.length} conseguidas</p>
+    <div class="badge-grid" style="margin:16px 0">${grid}</div>
+    <div class="bugfact" style="text-align:center">Aciertos totales: <b>${state.totalCorrect}</b> · Mejor racha: <b>${state.bestStreak}</b> 🔥</div>
+    <button class="btn btn-primary" id="closeBadges" style="width:100%;position:sticky;bottom:-2px">Cerrar</button>
+  `);
+  $("closeBadges").onclick=closeModal;
+  $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
+function showSettings(){
+  modal(`
+    <h2 style="margin-bottom:4px">⚙️ Ajustes</h2>
+    <p class="lead" style="margin-bottom:8px">Para mamá y papá</p>
+    <div style="text-align:left">
+      <div class="settings-row"><span>🔊 Sonidos suaves</span>
+        <label class="switch"><input type="checkbox" id="setSound" ${settings.sound?'checked':''}><span class="slider"></span></label></div>
+      <div class="settings-row"><span>🪰 Distracciones (mosca)</span>
+        <label class="switch"><input type="checkbox" id="setDist" ${settings.distractions?'checked':''}><span class="slider"></span></label></div>
+      <div class="settings-row"><span>🌙 Menos movimiento</span>
+        <label class="switch"><input type="checkbox" id="setMotion" ${settings.reduceMotion?'checked':''}><span class="slider"></span></label></div>
+      <div class="settings-row"><span>🔢 Mostrar llevada / préstamo</span>
+        <label class="switch"><input type="checkbox" id="setCarry" ${settings.showCarry?'checked':''}><span class="slider"></span></label></div>
+      <div class="settings-row"><span>🏎️ Carrera contra la liebre</span>
+        <label class="switch"><input type="checkbox" id="setRace" ${settings.race?'checked':''}><span class="slider"></span></label></div>
+    </div>
+    <div style="margin:12px 0;text-align:left">
+      <div style="font-weight:bold;margin-bottom:6px">Ritmo de la liebre</div>
+      <div class="chips" id="paceChips"></div>
+    </div>
+    <div style="margin:12px 0;text-align:left">
+      <div style="font-weight:bold;margin-bottom:6px">Frecuencia de distracción</div>
+      <div class="chips" id="freqChips"></div>
+    </div>
+    <p class="lead" style="font-size:13px">La distracción enseña a mantener el foco: el niño sabe que algo pasará, pero debe terminar su operación primero.</p>
+    <button class="btn btn-primary" id="closeSet" style="width:100%;margin-top:6px">Listo</button>
+    <button class="btn btn-ghost" id="resetAll" style="width:100%;margin-top:8px">↺ Reiniciar progreso</button>
+  `);
+  const freqs=[["baja","Poca"],["media","Normal"],["alta","Mucha"]];
+  const fc=$("freqChips");
+  freqs.forEach(([id,lbl])=>{
+    const c=document.createElement("button");
+    c.className="chip"+(settings.distractFreq===id?" active":"");
+    c.textContent=lbl; c.onclick=()=>{settings.distractFreq=id; saveSettings(); showSettings();};
+    fc.appendChild(c);
+  });
+  const paces=[["tranquila","Tranquila 🐢"],["normal","Normal"],["rapida","Rápida ⚡"]];
+  const pc=$("paceChips");
+  paces.forEach(([id,lbl])=>{
+    const c=document.createElement("button");
+    c.className="chip"+(settings.racePace===id?" active":"");
+    c.textContent=lbl; c.onclick=()=>{settings.racePace=id; saveSettings(); showSettings();};
+    pc.appendChild(c);
+  });
+  $("setRace").onchange=e=>{settings.race=e.target.checked; saveSettings(); if(!$("game").classList.contains("hidden")) startRace();};
+  $("setSound").onchange=e=>{settings.sound=e.target.checked; saveSettings();};
+  $("setDist").onchange=e=>{settings.distractions=e.target.checked; saveSettings();};
+  $("setMotion").onchange=e=>{settings.reduceMotion=e.target.checked; saveSettings();};
+  $("setCarry").onchange=e=>{settings.showCarry=e.target.checked; saveSettings(); if(!$("game").classList.contains("hidden")) renderVertical(state.pack[state.idx]);};
+  $("closeSet").onclick=closeModal;
+  $("resetAll").onclick=()=>{
+    if(confirm("¿Borrar insignias y progreso? Esto no se puede deshacer.")){
+      ["totalCorrect","packsDone","bestStreak","earnedBadges","bugsClicked","noGiveUpEver","collected","charsDiscovered","stickers","anims","stickerSheet"].forEach(k=>{try{localStorage.removeItem("ma_"+k);}catch(e){}});
+      location.reload();
+    }
+  };
+}
+
+/* ============================================================
+   DISTRACCIÓN: LA MOSCA / INSECTO
+   ============================================================ */
+let flyTimer=null;
+function freqMs(){ return settings.distractFreq==="baja"?28000 : settings.distractFreq==="alta"?9000 : 16000; }
+function scheduleFly(){
+  clearTimeout(flyTimer);
+  if(!settings.distractions) return;
+  flyTimer=setTimeout(flyAcross, freqMs()+rnd(0,4000));
+}
+function flyAcross(){
+  if($("game").classList.contains("hidden")||!settings.distractions){ scheduleFly(); return; }
+  const fly=$("fly");
+  // preferimos mostrar animales aún no recolectados, para motivar el álbum
+  const pending=CREATURES.filter(c=>!collected[c.id]);
+  const pool=pending.length?pending:CREATURES;
+  const bug=pool[rnd(0,pool.length-1)];
+  fly.textContent=bug.emoji;
+  fly.classList.remove("hidden","resting");
+  const w=window.innerWidth, h=window.innerHeight;
+  const startY=rnd(120,h-160), endY=rnd(120,h-160), restX=rnd(w*0.2,w*0.8), restY=rnd(160,h-220);
+  fly.style.left="0px"; fly.style.top="0px";
+  fly.style.transition="none";
+  fly.style.transform=`translate(${-60}px, ${startY}px)`;
+  // vuela hasta el punto de reposo
+  requestAnimationFrame(()=>{
+    fly.style.transition="transform 1.8s ease-in-out";
+    fly.style.transform=`translate(${restX}px, ${restY}px) rotate(8deg)`;
+  });
+  setTimeout(()=>{
+    fly.classList.add("resting"); // se posa: ahora se puede dar click
+  },1850);
+  // si no le dan click, se va sola
+  const leaveT=setTimeout(()=>{
+    fly.classList.remove("resting");
+    fly.style.transition="transform 1.6s ease-in";
+    fly.style.transform=`translate(${w+80}px, ${endY}px) rotate(-10deg)`;
+    setTimeout(()=>fly.classList.add("hidden"),1600);
+    scheduleFly();
+  }, 6500);
+  fly.onclick=()=>{
+    clearTimeout(leaveT);
+    fly.classList.add("hidden"); fly.classList.remove("resting");
+    state.bugsClicked++; Store.set("bugsClicked",state.bugsClicked);
+    const isNew=!collected[bug.id];
+    collected[bug.id]=true; Store.set("collected",collected);
+    showBugFact(bug, isNew);
+    scheduleFly();
+  };
+}
+function showBugFact(bug, isNew){
+  const newTag = isNew
+    ? `<div class="bugfact" style="background:#eafaf3;color:#16a06f;text-align:center;font-weight:bold">🆕 ¡Nuevo en tu álbum! Ya llevas ${collectedCount()} de ${CREATURES.length}.</div>`
+    : `<div class="bugfact" style="background:#fff6e8;color:#e08a18;text-align:center;font-weight:bold">Ya lo tenías. Álbum: ${collectedCount()} de ${CREATURES.length}.</div>`;
+  modal(`
+    <div class="big">${bug.emoji}</div>
+    <h2>${bug.name} <span style="font-size:13px;color:var(--soft)">· ${bug.cat}</span></h2>
+    <div class="bugfact"><b>¿Sabías que…?</b><br>${bug.fact}</div>
+    ${newTag}
+    <p class="refocus">😊 ¡Lo atrapaste para tu álbum! Ahora volvamos a la operación. Tú puedes terminar la misión.</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-good" id="bugBack">Volver a las matemáticas ▶</button>
+      <button class="btn btn-ghost" id="bugAlbum">🦋 Ver álbum</button>
+    </div>
+  `);
+  $("bugBack").onclick=()=>{ closeModal(); checkBadges(); };
+  $("bugAlbum").onclick=()=>{ closeModal(); checkBadges(); showAlbum(); };
+  tone(700,.1,"sine",.05);
+}
+
+/* ============================================================
+   ÁLBUM DE COLECCIÓN
+   ============================================================ */
+function showAlbum(){
+  const total=CREATURES.length, got=collectedCount();
+  let body="";
+  CREATURE_CATS.forEach(cat=>{
+    body+=`<div class="album-cat">${cat}</div><div class="album-grid">`;
+    CREATURES.filter(c=>c.cat===cat).forEach(c=>{
+      const has=!!collected[c.id];
+      body+=`<div class="acard ${has?'got':''}">
+        <div class="ae">${has?c.emoji:'❓'}</div>
+        <div class="an">${has?c.name:'???'}</div></div>`;
+    });
+    body+=`</div>`;
+  });
+  modal(`
+    <div class="big">🦋</div>
+    <h2>Mi álbum de animales</h2>
+    <p class="lead">Has atrapado ${got} de ${total}. ¡Sigue resolviendo para encontrar más!</p>
+    ${body}
+    <button class="btn btn-primary" id="closeAlbum" style="width:100%;margin-top:10px;position:sticky;bottom:-2px">Cerrar</button>
+  `);
+  $("closeAlbum").onclick=closeModal;
+  $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+function burstConfetti(n){
+  if(settings.reduceMotion) return;
+  const colors=["#3f7cf0","#7c5cff","#27c08a","#ffb13d","#ff7eb6"];
+  for(let i=0;i<n;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=rnd(10,window.innerWidth-10)+"px";
+    c.style.background=colors[rnd(0,colors.length-1)];
+    c.style.transform=`rotate(${rnd(0,360)}deg)`;
+    $("confettiMount").appendChild(c);
+    const fall=rnd(1200,2200), drift=rnd(-60,60);
+    c.animate([
+      {transform:`translate(0,0) rotate(0deg)`,opacity:1},
+      {transform:`translate(${drift}px,${window.innerHeight+40}px) rotate(${rnd(180,540)}deg)`,opacity:.9}
+    ],{duration:fall,easing:"ease-in"}).onfinish=()=>c.remove();
+  }
+}
+
+/* ============================================================
+   NAVEGACIÓN
+   ============================================================ */
+function goHome(){
+  clearTimeout(flyTimer);
+  stopRace();
+  $("fly").classList.add("hidden");
+  $("game").classList.add("hidden");
+  $("home").classList.remove("hidden");
+  renderWorlds(); renderLevels();
+  window.scrollTo(0,0);
+}
+$("btnStart").onclick=startPack;
+$("btnHome").onclick=goHome;
+$("btnBadges").onclick=showBadges;
+$("btnAlbum").onclick=showAlbum;
+$("btnMagic").onclick=showMagicAlbum;
+$("btnSettings").onclick=showSettings;
+$("btnHint").onclick=()=>{
+  const q=state.pack[state.idx];
+  $("feedback").className="feedback";
+  $("feedback").textContent=`Pista: la respuesta tiene ${(""+q.ans).length} cifra(s) y empieza por ${(""+q.ans)[0]}.`;
+};
+
+/* arrastre de pegatinas (mouse + touch) */
+document.addEventListener("pointermove", sheetMove);
+document.addEventListener("pointerup", sheetDrop);
+document.addEventListener("pointercancel", sheetCleanup);
+
+/* teclado físico opcional (tablet con teclado / PC) */
+document.addEventListener("keydown",e=>{
+  if($("game").classList.contains("hidden")) return;
+  if(e.key>="0"&&e.key<="9"){ const mx=(state.pack[state.idx]&&state.pack[state.idx].w)||3; if(state.answer.length<mx){state.answer+=e.key;paintAnswer();} }
+  else if(e.key==="Backspace"){ state.answer=state.answer.slice(0,-1); paintAnswer(); }
+  else if(e.key==="Enter"){ submit(); }
+});
+
+/* ---------- init ---------- */
+applySettings();
+renderWorlds();
+renderLevels();
+setNiloAvatars();
+
+/* Registro del Service Worker (PWA) — solo funciona vía http/https, no con file:// */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>
