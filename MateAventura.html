@@ -302,6 +302,7 @@
 
   .footer-note{text-align:center;color:#9fb0cd;font-size:13px;margin-top:10px}
   .footer-note.credit{margin-top:4px;font-weight:bold;color:#7a8aa8}
+  .cover{display:block;width:100%;max-width:380px;margin:0 auto 14px;border-radius:20px;box-shadow:var(--shadow)}
   .confetti{position:fixed;width:10px;height:14px;z-index:70;top:-20px;border-radius:2px;pointer-events:none}
   @media (max-width:480px){
     .question{font-size:46px}
@@ -400,6 +401,7 @@
     </div>
     <div class="btn-row">
       <button class="btn btn-ghost" id="btnHome">⏸ Salir</button>
+      <button class="btn btn-ghost" id="btnBreathe">🐱 Respirar</button>
       <button class="btn btn-ghost" id="btnHint">💡 Pista</button>
     </div>
   </section>
@@ -430,8 +432,19 @@ const Store = {
 /* ---------- Ajustes ---------- */
 const settings = Object.assign({
   sound:true, distractions:true, reduceMotion:false, distractFreq:"media", showCarry:true,
-  race:true, racePace:"tranquila"
+  race:true, racePace:"tranquila", sessionMin:0
 }, Store.get("settings", {}));
+
+/* ---------- Sesión amable (tiempo de pantalla sin angustia) ----------
+   El tiempo NUNCA corta a media actividad: solo decide cuándo es la
+   última misión y prepara un cierre tranquilo. */
+let sessionStart = Date.now();   // cada vez que se abre la app = sesión nueva
+let sessionExtraMs = 0;          // minutos extra concedidos por el adulto
+let sessionPacks = 0;            // misiones completadas en esta sesión
+function sessionLimitMs(){ return settings.sessionMin>0 ? settings.sessionMin*60000 + sessionExtraMs : Infinity; }
+function sessionLeftMs(){ return sessionLimitMs() - (Date.now()-sessionStart); }
+function sessionOver(){ return settings.sessionMin>0 && sessionLeftMs()<=0; }
+function sessionSoon(){ const l=sessionLeftMs(); return settings.sessionMin>0 && l>0 && l<=120000; }
 function saveSettings(){ Store.set("settings", settings); applySettings(); }
 function applySettings(){
   document.body.classList.toggle("reduce-motion", settings.reduceMotion);
@@ -920,7 +933,14 @@ function startPack(){
   $("game").classList.remove("hidden");
   $("levelLabel").textContent = (LEVELS.find(l=>l.id===state.level)||{}).label||"";
   setNiloAvatars();
-  niloSay(`Hoy te acompaña ${w.char} (${w.role}). ${w.intro} 🦦`,"happy");
+  state.lastMission = sessionOver();
+  if(state.lastMission){
+    niloSay(`Esta es la última misión de hoy. La hacemos con calma 🦦 Tu progreso se guarda.`,"happy");
+  } else {
+    let m=`Hoy te acompaña ${w.char} (${w.role}). ${w.intro} 🦦`;
+    if(sessionSoon()) m="⏳ Nos queda poquito tiempo hoy. "+m;
+    niloSay(m,"happy");
+  }
   showQuestion();
   scheduleFly();
   startRace();
@@ -1044,7 +1064,7 @@ function showQuestion(){
   // casillas del resultado (una por columna); empieza seleccionada la de Unidades
   state.cells=new Array(q.w).fill("");
   state.sel=q.w-1;
-  $("packProgress").textContent=`Operación ${state.idx+1} de 6`;
+  $("packProgress").textContent=`Operación ${state.idx+1} de 6`+(state.lastMission?" · Última de hoy 🌙":"");
   $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
   $("answerBox").className="answer-box";
   $("feedback").textContent="";
@@ -1181,7 +1201,8 @@ function submit(){
     state.attempts++; state.mistakes++; state.streak=0;
     $("answerBox").className="answer-box bad";
     sndOops();
-    niloSay(NILO_GENTLE[rnd(0,NILO_GENTLE.length-1)], "warm");
+    if(state.attempts>=3) niloSay("Si quieres, respira un momento con Misi 🐱 (botón de abajo). Lo intentamos otra vez juntos.","warm");
+    else niloSay(NILO_GENTLE[rnd(0,NILO_GENTLE.length-1)], "warm");
     let msg;
     if(state.attempts===1) msg="Casi… inténtalo otra vez 💛";
     else if(state.attempts===2) msg="Cuenta despacio y prueba de nuevo 🌈";
@@ -1236,6 +1257,7 @@ function finishPack(){
   setCar("carYou",1);
   if(settings.race && !state.raceLost){ state.raceWon=true; $("raceMsg").textContent="🏁 ¡Le ganaste a la liebre!"; $("raceMsg").style.color="#16a06f"; }
   state.packsDone++; Store.set("packsDone",state.packsDone);
+  sessionPacks++;
   if(state.noGiveUp){ noGiveUpEver=true; Store.set("noGiveUpEver",true); }
   const w=currentWorld();
   $("charName").textContent="¡Es "+w.char+"!";
@@ -1311,6 +1333,7 @@ function animRainbow(){
    LECCIÓN DE CONDUCTA
    ============================================================ */
 function showLesson(){
+  if(sessionOver()){ showDayClosure(); return; } // cierre del día con Misi (calma)
   let key;
   if(state.mistakes===0) key="perfect";
   else if(state.mistakes<=2) key="good";
@@ -1337,6 +1360,68 @@ function showLesson(){
   $("lessonNext").onclick=()=>{ closeModal(); startPack(); };
   $("lessonAlbum").onclick=()=>{ closeModal(); showMagicAlbum(); };
   $("lessonHome").onclick=()=>{ closeModal(); goHome(); };
+}
+/* Avatar de Misi (personaje de calma) para el cierre del día */
+function misiAvatarHTML(){
+  const w=WORLDS.find(x=>x.id==="cat"); if(!w) return "";
+  const src=w.img||IMAGES[w.id];
+  return src ? `<img src="${src}" alt="Misi" onerror="worldFallback(this,'cat','icon')">` : w.icon;
+}
+/* Cierre del día: lo da Misi con respiración guiada */
+function showDayClosure(){
+  modal(`
+    <div class="lesson-nilo">${misiAvatarHTML()}</div>
+    <h2>🐱 Misi te acompaña a cerrar</h2>
+    <div class="breath"></div>
+    <p class="lead">Respiremos juntos… inhala mientras el círculo crece, exhala mientras baja. 🌙</p>
+    <div class="bugfact" style="background:#eef2fb;color:#3a4a6b;text-align:center">
+      <b>Terminamos por hoy</b><br>Hoy completaste <b>${sessionPacks}</b> ${sessionPacks===1?'misión':'misiones'}. ¡Lo hiciste muy bien!<br>
+      Tu progreso está guardado. Mañana seguimos 💙
+    </div>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-good" id="lessonDone">😌 Listo por hoy</button>
+      <button class="btn btn-ghost" id="lessonMore">▶ 5 minutos más</button>
+    </div>
+  `);
+  $("lessonDone").onclick=()=>{ closeModal(); goHome(); };
+  $("lessonMore").onclick=()=>{ sessionExtraMs += 5*60000; closeModal(); startPack(); };
+}
+/* Puerta amable al intentar empezar cuando ya se acabó el tiempo */
+function sessionGate(){
+  modal(`
+    <div class="lesson-nilo">${misiAvatarHTML()}</div>
+    <div style="font-size:42px">🌙</div>
+    <h2>Ya practicamos por hoy</h2>
+    <p class="lead">Hiciste un gran trabajo 💙 Tu progreso está guardado y mañana seguimos. ¿Una misión más o lo dejamos por hoy?</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-good" id="gateDone">🌙 Mañana seguimos</button>
+      <button class="btn btn-ghost" id="gateMore">▶ Una misión más</button>
+    </div>
+  `);
+  $("gateDone").onclick=closeModal;
+  $("gateMore").onclick=()=>{ closeModal(); startPack(); };
+}
+/* Respiración a demanda con Misi: pausa la liebre y el reloj de sesión */
+let breatheStart=0;
+function showBreathe(){
+  breatheStart=Date.now();
+  stopRace(); // pausa a la liebre mientras respiramos
+  modal(`
+    <div class="lesson-nilo">${misiAvatarHTML()}</div>
+    <h2>🐱 Respira con Misi</h2>
+    <div class="breath"></div>
+    <p class="lead">Vamos despacio. Inhala mientras el círculo crece… y exhala mientras baja. Todo está bien. 💙</p>
+    <button class="btn btn-good" id="breatheBack" style="width:100%">Estoy list@, volver ▶</button>
+  `);
+  $("breatheBack").onclick=()=>{
+    const paused=Date.now()-breatheStart;     // no penalizar el respiro
+    sessionStart += paused;
+    closeModal();
+    if(settings.race && !state.raceDecided && !$("game").classList.contains("hidden")){
+      state.raceLast=Date.now();
+      raceTimer=setInterval(tickRace,150);
+    }
+  };
 }
 
 /* ---------- Álbum Matemágico: vista y recompensas ---------- */
@@ -1512,6 +1597,11 @@ function showSettings(){
       <div style="font-weight:bold;margin-bottom:6px">Frecuencia de distracción</div>
       <div class="chips" id="freqChips"></div>
     </div>
+    <div style="margin:12px 0;text-align:left">
+      <div style="font-weight:bold;margin-bottom:6px">⏳ Tiempo de sesión</div>
+      <div class="chips" id="sessChips"></div>
+      <p class="lead" style="font-size:12.5px;margin-top:6px">Al acabarse, la app deja terminar la misión en curso y hace un cierre tranquilo. Nunca corta a la mitad.</p>
+    </div>
     <p class="lead" style="font-size:13px">La distracción enseña a mantener el foco: el niño sabe que algo pasará, pero debe terminar su operación primero.</p>
     <button class="btn btn-primary" id="closeSet" style="width:100%;margin-top:6px">Listo</button>
     <button class="btn btn-ghost" id="resetAll" style="width:100%;margin-top:8px">↺ Reiniciar progreso</button>
@@ -1531,6 +1621,14 @@ function showSettings(){
     c.className="chip"+(settings.racePace===id?" active":"");
     c.textContent=lbl; c.onclick=()=>{settings.racePace=id; saveSettings(); showSettings();};
     pc.appendChild(c);
+  });
+  const sess=[[0,"Sin límite"],[10,"10 min"],[15,"15 min"],[20,"20 min"],[30,"30 min"]];
+  const sc=$("sessChips");
+  sess.forEach(([v,lbl])=>{
+    const c=document.createElement("button");
+    c.className="chip"+(settings.sessionMin===v?" active":"");
+    c.textContent=lbl; c.onclick=()=>{ settings.sessionMin=v; sessionStart=Date.now(); sessionExtraMs=0; saveSettings(); showSettings(); };
+    sc.appendChild(c);
   });
   $("setRace").onchange=e=>{settings.race=e.target.checked; saveSettings(); if(!$("game").classList.contains("hidden")) startRace();};
   $("setSound").onchange=e=>{settings.sound=e.target.checked; saveSettings();};
@@ -1676,7 +1774,7 @@ function goHome(){
   renderWorlds(); renderLevels();
   window.scrollTo(0,0);
 }
-$("btnStart").onclick=startPack;
+$("btnStart").onclick=()=>{ if(sessionOver()) sessionGate(); else startPack(); };
 $("btnHome").onclick=goHome;
 $("btnBadges").onclick=showBadges;
 $("btnAlbum").onclick=showAlbum;
@@ -1687,6 +1785,7 @@ $("btnHint").onclick=()=>{
   $("feedback").className="feedback";
   $("feedback").textContent=`Pista: la respuesta tiene ${(""+q.ans).length} cifra(s) y empieza por ${(""+q.ans)[0]}.`;
 };
+$("btnBreathe").onclick=showBreathe;
 
 /* arrastre de pegatinas (mouse + touch) */
 document.addEventListener("pointermove", sheetMove);

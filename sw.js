@@ -1,6 +1,6 @@
 /* Service Worker — Mate Aventura (PWA)
    Cachea la app y sus recursos para que funcione sin internet. */
-const CACHE = "mate-aventura-v2";
+const CACHE = "mate-aventura-v3";
 const ASSETS = [
   "index.html",
   "MateAventura.html",

@@ -1,7 +1,7 @@
 # Mate Aventura — Documento de Proyecto
 
-> **Versión:** 1.0 · **Estado:** Diseño conceptual + prototipo funcional (un solo archivo HTML)
-> **Archivo principal:** `MateAventura.html`
+> **Versión:** 1.1 · **Estado:** Prototipo funcional + PWA instalable (publicable como app web)
+> **Archivo principal:** `MateAventura.html` · **Entrada web:** `index.html`
 > Este documento une la **visión conceptual** (trabajada en `Mate_Aventura.pdf`) con el **estado real de implementación** del prototipo.
 
 ---
@@ -77,6 +77,8 @@ El prototipo usa **8 mundos temáticos** que el niño elige libremente (Carreras
 - **Reto 🏆** — con llevar y prestar
 - **Mezcla 🎲** — un poco de todo
 
+**Desbloqueo progresivo:** los mundos se abren en orden. Solo el primero (Carreras · Turbo) está disponible al inicio; cada mundo se desbloquea al **completar el anterior**. Los mundos bloqueados se muestran con **❓** y un aviso ("Completa el mundo anterior"); los completados llevan un **✓**. Al desbloquear uno nuevo, aparece "🔓 ¡Nuevo mundo desbloqueado!".
+
 > **Pendiente / brecha:** atar cada mundo a una operación específica (como en la visión), y añadir multiplicaciones, divisiones, conteo y problemas (ver Visión a futuro).
 
 ---
@@ -104,7 +106,9 @@ Extras de colección ya implementados:
 
 ## 7. Mecánicas implementadas
 
-- **Operaciones en vertical (columna)** como en la escuela, con **ayuda visual de la llevada (sumas) y el préstamo (restas)**, activable/desactivable.
+- **Operaciones en vertical (columna)** sobre fondo de **cuadrícula de cuaderno**, con encabezados de **valor posicional: Centenas · Decenas · Unidades** (con código de color) siempre visibles.
+- **Ayuda visual de la llevada (sumas) y el préstamo (restas)** en **cajitas** sobre cada columna: se rellenan solas con la ayuda activada y quedan **vacías** (para que el niño las escriba/piense) cuando se desactiva.
+- **Resultado en casillas separadas y seleccionables:** una casilla por valor posicional; el niño **toca la casilla** (unidades, decenas, centenas) donde quiere escribir; al teclear avanza sola hacia la izquierda. El valor se calcula respetando el lugar de cada cifra.
 - **Revelado de imagen secreta:** cada acierto destapa una pieza; al completar 6 aparece el personaje.
 - **Nilo, guía permanente:** da instrucciones, felicita y **acompaña los errores sin juzgar** ("Veamos otra vez, juntos. Sin prisa"). Presenta a cada personaje y su personalidad al iniciar la misión, y aparece en las lecciones.
 - **Animación de acierto:** estrellas que suben + rebote del personaje y de la pieza revelada.
@@ -125,6 +129,7 @@ Opciones objetivo (PDF) y estado en el prototipo:
 - ✅ **Tiempo ilimitado** (no hay reloj obligatorio; la liebre es opcional)
 - ✅ Control de **distracciones** (frecuencia / apagar) y de la **carrera**
 - ✅ Ayuda visual de llevada/préstamo activable
+- ✅ **Sesión amable**: límite de tiempo configurable que **nunca corta a media actividad**; avisa antes, deja terminar la misión y cierra con calma (pensado para el hiperfoco y la angustia por no terminar)
 - ⬜ **Modo alto contraste** (pendiente)
 - ⬜ **Modo concentración** dedicado (pendiente; parcialmente cubierto al apagar carrera y distracciones)
 
@@ -151,11 +156,17 @@ Principios de UX aplicados: estructura predecible ("Operación 3 de 6"), botones
 
 ## 10. Detalles técnicos
 
-- **Un solo archivo** `MateAventura.html` (HTML + CSS + JS en línea). Se abre con doble clic, sin internet ni instalación.
+- **App web** `MateAventura.html` (HTML + CSS + JS en línea). Se abre con doble clic, sin internet ni instalación.
 - **Imágenes** de personajes en la misma carpeta (PNG con fondo transparente); respaldo SVG automático si falta alguna.
-- **Persistencia** con `localStorage` (progreso, insignias, álbumes, pegatinas pegadas, ajustes).
+- **Persistencia** con `localStorage` (progreso, insignias, álbumes, pegatinas pegadas, mundos desbloqueados, ajustes).
 - **Sin dependencias externas**; funciona offline en tablet o PC.
-- **Compatibilidad táctil y mouse** (la lámina de pegatinas usa eventos de puntero).
+- **Compatibilidad táctil y mouse** (lámina de pegatinas y casillas usan eventos de puntero).
+
+### PWA (instalable como app)
+- `manifest.json` + `sw.js` (service worker) + íconos (`icon-192.png`, `icon-512.png`, versiones *maskable*, `icon-180.png` para iOS) → la app se **instala** en el celular/tablet y **funciona sin internet** tras abrirse una vez.
+- `index.html` redirige a la app para que la **raíz** del enlace abra directamente Mate Aventura (útil en GitHub Pages u otro hosting).
+- Las funciones PWA (instalación, modo offline) **requieren publicarla con https** (p. ej. GitHub Pages o Netlify). Ver `Guia_Publicacion.md`.
+- Para actualizar la versión publicada: subir los archivos cambiados y subir el número en `sw.js` (`const CACHE = "mate-aventura-vN"`).
 
 ---
 
@@ -164,8 +175,11 @@ Principios de UX aplicados: estructura predecible ("Operación 3 de 6"), botones
 | Área | Estado |
 |------|--------|
 | Sumas y restas (1 y 2 dígitos, con/sin reagrupación) | ✅ |
-| Operación vertical + ayuda de llevada/préstamo | ✅ |
+| Operación vertical + cuadrícula + columnas C/D/U | ✅ |
+| Ayuda de llevada/préstamo en cajitas (activable) | ✅ |
+| Resultado en casillas separadas y seleccionables | ✅ |
 | 8 personajes + Nilo guía (con imágenes) | ✅ |
+| Desbloqueo progresivo de mundos (❓ hasta completar) | ✅ |
 | Revelado de imagen secreta | ✅ |
 | Insignias / logros | ✅ |
 | Álbum de animales (distracciones educativas) | ✅ |
@@ -173,6 +187,7 @@ Principios de UX aplicados: estructura predecible ("Operación 3 de 6"), botones
 | Carrera vs liebre + power-ups | ✅ |
 | Álbum Matemágico (personaje + pegatina + animación por misión) | ✅ |
 | Lámina de pegatinas arrastrables | ✅ |
+| PWA instalable + offline (manifest, service worker, íconos) | ✅ |
 | Multiplicaciones y divisiones | ⬜ |
 | Conteo y problemas matemáticos | ⬜ |
 | Mundos atados a operación (estructura del PDF) | ⬜ |
@@ -195,7 +210,11 @@ Principios de UX aplicados: estructura predecible ("Operación 3 de 6"), botones
 ## 13. Archivos en la carpeta
 
 - `MateAventura.html` — la aplicación.
+- `index.html` — redirección a la app (para que la raíz del enlace la abra).
+- `manifest.json`, `sw.js` — configuración PWA (instalable + offline).
+- `icon-192.png`, `icon-512.png`, `icon-192-maskable.png`, `icon-512-maskable.png`, `icon-180.png` — íconos de la app.
 - `Nilo.png`, `Robi.png`, `Turbo.png`, `Cosmos.png`, `Luna.png`, `Rex.png`, `Draco.png`, `Misi.png`, `Tako.png` — imágenes de personajes.
+- `Guia_Publicacion.md` — guía para publicarla gratis y compartir el enlace.
 - `Mate_Aventura.pdf` — documento conceptual (origen de esta visión).
 - `proyecto.md` — este documento.
 
