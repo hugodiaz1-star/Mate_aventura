@@ -221,6 +221,9 @@
   .placed{position:absolute;font-size:38px;line-height:1;transform:translate(-50%,-50%);cursor:grab;touch-action:none;user-select:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
   .placed:active{cursor:grabbing}
   .sheetdrag{position:fixed;z-index:95;font-size:42px;line-height:1;pointer-events:none;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.25))}
+  .traysticker img,.traysticker svg{width:34px;height:34px;object-fit:cover;display:block;margin:0 auto;border-radius:8px}
+  .placed img,.placed svg{width:46px;height:46px;object-fit:cover;display:block;border-radius:10px}
+  .sheetdrag img,.sheetdrag svg{width:50px;height:50px;object-fit:cover;display:block;border-radius:10px}
   .sheetfoot{display:flex;gap:10px;align-items:center;margin-top:4px}
   .sheettrash{flex:0 0 auto;display:flex;align-items:center;gap:6px;border:2px dashed #f0b6a3;color:#e0653a;background:#fff3ee;border-radius:14px;padding:10px 14px;font-weight:bold;font-size:14px}
   .sheettrash.hot{background:#ffe0d6;border-color:#e0653a}
@@ -358,6 +361,18 @@
   .welcomeava{width:78px;height:78px;border-radius:50%;overflow:hidden;margin:2px auto 4px;
               background:#fff;box-shadow:var(--shadow)}
   .welcomeava img,.welcomeava svg{width:100%;height:100%;object-fit:cover}
+
+  /* ----- Seguridad (incendios) ----- */
+  .fire-art{text-align:center;margin:6px 0 14px;min-height:84px}
+  .fire-art .big-emoji{font-size:66px;display:block;margin:8px 0}
+  .fire-art .row{display:flex;flex-wrap:wrap;gap:12px 18px;justify-content:center;margin:10px 0}
+  .fire-art .item{display:flex;flex-direction:column;align-items:center;font-size:13px;font-weight:bold;color:#5a6b8c;gap:3px;width:84px}
+  .fire-art .item .e{font-size:44px;line-height:1}
+  .fire-art .seq{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px;font-size:15px;font-weight:bold;color:#2b3960}
+  .fire-art .seq .e{font-size:38px}
+  .fire-art .scene{font-size:54px;letter-spacing:6px}
+  .vopt.full{grid-column:1 / -1}
+  .vopt.fire-next{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff}
 </style>
 </head>
 <body>
@@ -469,6 +484,23 @@
       <button class="btn btn-ghost" id="btnHome">⏸ Salir</button>
       <button class="btn btn-ghost" id="btnBreathe">🐱 Respirar</button>
       <button class="btn btn-ghost" id="btnHint">💡 Pista</button>
+    </div>
+  </section>
+
+  <!-- ===== SEGURIDAD (incendios) ===== -->
+  <section id="fire" class="hidden">
+    <div class="nilobar">
+      <div class="niloava" id="fireAva"></div>
+      <div class="nilobubble" id="fireMsg">¡Hola! Soy Fito 🔥</div>
+    </div>
+    <div class="card">
+      <div class="progresstext" id="fireProgress">Paso 1</div>
+      <div class="fire-art" id="fireArt"></div>
+      <div class="voptions" id="fireActions"></div>
+      <div class="feedback" id="fireFeedback"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btnFireHome">⏸ Salir</button>
     </div>
   </section>
 </div>
@@ -741,11 +773,19 @@ const LEVELS_VOCAB = [
   {id:"vmedio", label:"Medio 🚀", desc:"Solo la palabra"},
   {id:"vmix",   label:"Mezcla 🎲", desc:"Un poco de todo"}
 ];
-const AREAS = [
-  {id:"mate",  label:"Números 🔢", desc:"Sumas y restas"},
-  {id:"vocab", label:"Palabras 🗣️", desc:"Inglés y español"}
+const LEVELS_FIRE = [
+  {id:"fire", label:"Lección 🔥", desc:"Con Fito y Bruno"}
 ];
-function currentLevels(){ return state.area==="vocab" ? LEVELS_VOCAB : LEVELS_MATE; }
+const AREAS = [
+  {id:"mate",     label:"Números 🔢", desc:"Sumas y restas"},
+  {id:"vocab",    label:"Palabras 🗣️", desc:"Inglés y español"},
+  {id:"seguridad",label:"Seguridad 🔥", desc:"Fuego e incendios"}
+];
+function currentLevels(){
+  if(state.area==="vocab") return LEVELS_VOCAB;
+  if(state.area==="seguridad") return LEVELS_FIRE;
+  return LEVELS_MATE;
+}
 
 /* ---------- Banco de palabras (Vocabulario inglés ↔ español) ----------
    lvl 1 = básico (concreto, con emoji de ayuda) · lvl 2 = medio
@@ -881,7 +921,12 @@ const STICKERS = [
   {id:"planeta",e:"🪐",name:"Planeta"},{id:"balon",e:"⚽",name:"Balón"},
   {id:"globo",e:"🎈",name:"Globo"},{id:"regalo",e:"🎁",name:"Regalo"},
   {id:"unicornio",e:"🦄",name:"Unicornio"},{id:"mago",e:"🧙",name:"Mago"},
-  {id:"pulpo",e:"🐙",name:"Pulpo"},{id:"dino",e:"🦕",name:"Dino"}
+  {id:"pulpo",e:"🐙",name:"Pulpo"},{id:"dino",e:"🦕",name:"Dino"},
+  // Pegatinas especiales de personaje: NO se dan en misiones normales,
+  // se "descubren" al terminar el reto de cada uno.
+  {id:"st_bastian", e:"🦫", name:"Bastián", special:true, char:"bastian"},
+  {id:"st_fito",    e:"🔥", name:"Fito",    special:true, char:"fito"},
+  {id:"st_bruno",   e:"🚒", name:"Bruno",   special:true, char:"bruno"}
 ];
 const ANIMS = [
   {id:"confeti",e:"🎉",name:"Confeti"},{id:"estrellas",e:"⭐",name:"Lluvia de estrellas"},
@@ -896,7 +941,7 @@ function saveSheet(){ Store.set("stickerSheet", placedStickers); }
 function awardPackRewards(){
   const rw={char:null, sticker:null, anim:null};
   if(!charsDiscovered[state.world]){ charsDiscovered[state.world]=true; Store.set("charsDiscovered",charsDiscovered); rw.char=currentWorld(); }
-  const ns=STICKERS.find(s=>!stickersOwned.includes(s.id));
+  const ns=STICKERS.find(s=>!s.special && !stickersOwned.includes(s.id));
   if(ns){ stickersOwned.push(ns.id); Store.set("stickers",stickersOwned); rw.sticker=ns; }
   const na=ANIMS.find(a=>!animsOwned.includes(a.id));
   if(na){ animsOwned.push(na.id); Store.set("anims",animsOwned); rw.anim=na; }
@@ -991,7 +1036,8 @@ const BADGES = [
   {id:"star",    ring:"r-warm",  icon:"⭐", label:"50 aciertos", test:s=>s.totalCorrect>=50},
   {id:"col5",    ring:"r-pink",  icon:"🔍", label:"5 animales", test:s=>s.collectedCount>=5},
   {id:"col12",   ring:"r-green", icon:"🧭", label:"12 animales", test:s=>s.collectedCount>=12},
-  {id:"colAll",  ring:"r-warm",  icon:"🏆", label:"¡Álbum completo!", test:s=>s.collectedCount>=CREATURES.length}
+  {id:"colAll",  ring:"r-warm",  icon:"🏆", label:"¡Álbum completo!", test:s=>s.collectedCount>=CREATURES.length},
+  {id:"fire",    ring:"r-warm",  icon:"🚒", label:"Seguro con el fuego", test:s=>s.fireDone}
 ];
 let earnedBadges = Store.get("earnedBadges", []);
 let noGiveUpEver = Store.get("noGiveUpEver", false);
@@ -1141,9 +1187,10 @@ function renderArea(){
 }
 function syncAreaLead(){
   const lead=$("levelLead"); if(lead){
-    lead.textContent = state.area==="vocab"
-      ? "Empareja la palabra en español con su traducción en inglés (¡y al revés!)."
-      : "Mezcla repaso de 1º con el reto de 2º (dos dígitos).";
+    lead.textContent =
+      state.area==="vocab"     ? "Empareja la palabra en español con su traducción en inglés (¡y al revés!)." :
+      state.area==="seguridad" ? "Aprende sobre el fuego y los incendios con Fito y Bruno, con calma y sin miedo." :
+                                 "Mezcla repaso de 1º con el reto de 2º (dos dígitos).";
   }
   // si el nivel guardado no pertenece al área, usar el primero del área
   if(!currentLevels().some(l=>l.id===state.level)){
@@ -1750,9 +1797,17 @@ function showMagicAlbum(){
     chars+=`<div class="mcard ${got?'got':''}"><div class="mi">${got?worldThumb(w):'❓'}</div><div class="mn">${got?w.char.split(',')[0]:'???'}</div></div>`;
   });
   chars+=`</div>`;
-  let stk=`<div class="album-cat">✨ Pegatinas (${stickersOwned.length}/${STICKERS.length})</div><div class="magic-grid">`;
-  STICKERS.forEach(s=>{ const got=stickersOwned.includes(s.id);
+  const regular=STICKERS.filter(s=>!s.special), specials=STICKERS.filter(s=>s.special);
+  const regOwned=regular.filter(s=>stickersOwned.includes(s.id)).length;
+  let stk=`<div class="album-cat">✨ Pegatinas (${regOwned}/${regular.length})</div><div class="magic-grid">`;
+  regular.forEach(s=>{ const got=stickersOwned.includes(s.id);
     stk+=`<div class="mcard ${got?'got':''}"><div class="mi">${got?s.e:'❓'}</div><div class="mn">${got?s.name:'???'}</div></div>`;
+  });
+  stk+=`</div>`;
+  const spOwned=specials.filter(s=>stickersOwned.includes(s.id)).length;
+  stk+=`<div class="album-cat">🌟 Especiales · descúbrelas en los retos (${spOwned}/${specials.length})</div><div class="magic-grid">`;
+  specials.forEach(s=>{ const got=stickersOwned.includes(s.id);
+    stk+=`<div class="mcard ${got?'got':''}"><div class="mi">${got?stickerVisual(s):'❓'}</div><div class="mn">${got?s.name:'???'}</div></div>`;
   });
   stk+=`</div>`;
   let an=`<div class="album-cat">🎬 Animaciones (${animsOwned.length}/${ANIMS.length})</div><div class="animlist">`;
@@ -1776,6 +1831,16 @@ function showMagicAlbum(){
 
 /* ---------- Lámina de pegatinas: arrastrar y soltar (mouse + touch) ---------- */
 function emojiOf(id){ const s=STICKERS.find(x=>x.id===id); return s?s.e:"⭐"; }
+/* Visual de una pegatina: imagen del personaje (especiales) o emoji */
+function stickerVisual(s){
+  if(!s) return "⭐";
+  if(s.char==="bastian") return `<img class="stk-img" src="Bastian.png" alt="">`;
+  if(s.char==="fito")    return `<img class="stk-img" src="Fito.png" alt="" onerror="this.outerHTML=FITO_SVG">`;
+  if(s.char==="bruno")   return `<img class="stk-img" src="Bruno.png" alt="" onerror="this.outerHTML=BRUNO_SVG">`;
+  return s.e;
+}
+function stickerVisualById(id){ return stickerVisual(STICKERS.find(x=>x.id===id)); }
+function grantSticker(id){ if(!stickersOwned.includes(id)){ stickersOwned.push(id); Store.set("stickers",stickersOwned); return true; } return false; }
 function clamp01(v){ return Math.max(0.03, Math.min(0.97, v)); }
 function showStickerSheet(){
   $("modalMount").innerHTML=`<div class="overlay"><div class="modal sheetmodal">
@@ -1797,12 +1862,12 @@ function renderSheet(){
   const tray=$("sheetTray"), board=$("sheetBoard");
   if(!tray||!board) return;
   tray.innerHTML = stickersOwned.length
-    ? stickersOwned.map(id=>`<div class="traysticker" onpointerdown="sheetGrabNew(event,'${id}')">${emojiOf(id)}</div>`).join("")
+    ? stickersOwned.map(id=>`<div class="traysticker" onpointerdown="sheetGrabNew(event,'${id}')">${stickerVisualById(id)}</div>`).join("")
     : `<div class="trayhint">Gana pegatinas resolviendo 🎴</div>`;
-  board.innerHTML = placedStickers.map((p,i)=>`<div class="placed" style="left:${p.x*100}%;top:${p.y*100}%" onpointerdown="sheetGrabPlaced(event,${i})">${emojiOf(p.id)}</div>`).join("");
+  board.innerHTML = placedStickers.map((p,i)=>`<div class="placed" style="left:${p.x*100}%;top:${p.y*100}%" onpointerdown="sheetGrabPlaced(event,${i})">${stickerVisualById(p.id)}</div>`).join("");
 }
 let sheetState=null, sheetGhost=null;
-function sheetGhostMake(id,e){ sheetGhost=document.createElement("div"); sheetGhost.className="sheetdrag"; sheetGhost.textContent=emojiOf(id); document.body.appendChild(sheetGhost); sheetGhostPos(e); }
+function sheetGhostMake(id,e){ sheetGhost=document.createElement("div"); sheetGhost.className="sheetdrag"; sheetGhost.innerHTML=stickerVisualById(id); document.body.appendChild(sheetGhost); sheetGhostPos(e); }
 function sheetGhostPos(e){ if(sheetGhost){ sheetGhost.style.left=e.clientX+"px"; sheetGhost.style.top=e.clientY+"px"; } }
 function sheetGrabNew(e,id){ e.preventDefault(); sheetState={mode:"new",id}; sheetGhostMake(id,e); }
 function sheetGrabPlaced(e,idx){ e.preventDefault(); sheetState={mode:"move",idx,id:placedStickers[idx].id}; sheetGhostMake(placedStickers[idx].id,e); }
@@ -1968,6 +2033,138 @@ function showCamp(){
   if(found){ const a=$("bastianAva"); if(a){ a.style.fontSize=""; a.innerHTML=bastianAvatarHTML(); } }
   $("closeCamp").onclick=closeModal;
   $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
+/* ============================================================
+   SEGURIDAD · Incendios · "Fito el Fuego" y "Bruno el Bombero"
+   Lección guiada (sin miedo, con reglas claras y refuerzo positivo).
+   ============================================================ */
+const FITO_SVG = `<svg viewBox="0 0 100 100"><path d="M50 8 C58 30 80 36 70 62 C66 76 60 82 50 93 C40 82 34 76 30 62 C20 36 42 30 50 8Z" fill="#ff7a18"/><path d="M50 32 C56 46 67 50 60 66 C57 75 54 80 50 88 C46 80 43 75 40 66 C33 50 44 46 50 32Z" fill="#ffd34d"/><circle cx="43" cy="62" r="4.6" fill="#3a2a1a"/><circle cx="57" cy="62" r="4.6" fill="#3a2a1a"/><circle cx="44.6" cy="60.6" r="1.5" fill="#fff"/><circle cx="58.6" cy="60.6" r="1.5" fill="#fff"/><path d="M44 72 Q50 78 56 72" stroke="#3a2a1a" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>`;
+const BRUNO_SVG = `<svg viewBox="0 0 100 100"><circle cx="50" cy="58" r="30" fill="#f1c9a0"/><path d="M18 46 Q50 16 82 46 L82 52 Q50 40 18 52 Z" fill="#e23b2e"/><rect x="44" y="28" width="12" height="12" rx="2" fill="#ffd34d"/><circle cx="40" cy="58" r="4.6" fill="#3a2a1a"/><circle cx="60" cy="58" r="4.6" fill="#3a2a1a"/><circle cx="41.4" cy="56.6" r="1.5" fill="#fff"/><circle cx="61.4" cy="56.6" r="1.5" fill="#fff"/><path d="M42 69 Q50 76 58 69" stroke="#a55b33" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+function fireAvatar(ch){
+  if(ch==="bruno") return `<img src="Bruno.png" alt="Bruno" onerror="this.outerHTML=BRUNO_SVG">`;
+  if(ch==="nilo")  return niloAvatarHTML();
+  return `<img src="Fito.png" alt="Fito" onerror="this.outerHTML=FITO_SVG">`;
+}
+const fe   = (e,l)=>`<div class="item"><span class="e">${e}</span>${l}</div>`;
+const frow = (...x)=>`<div class="row">${x.join("")}</div>`;
+const fbig = (e)=>`<span class="big-emoji">${e}</span>`;
+const fsi  = (e,l)=>`<span><span class="e">${e}</span> ${l}</span>`;
+const fseq = (...x)=>`<div class="seq">${x.join('<span>→</span>')}</div>`;
+
+const FIRE_STEPS = [
+  {char:"fito", tag:"Conoce a Fito", say:`¡Hola! Soy <b>Fito el Fuego</b> 🔥. Puedo ayudarte a <b>cocinar</b> o a <b>darte calor</b>… pero <b>nunca debes jugar conmigo</b>. Vamos a conocernos, con calma.`, art:fbig("🔥")},
+
+  {char:"fito", tag:"Nivel 1 · ¿Dónde hay fuego?", say:`Me puedes ver en lugares como estos:`, art:frow(fe("🕯️","Vela"),fe("🍳","Estufa"),fe("🔥","Chimenea"),fe("🏕️","Fogata"))},
+  {char:"fito", tag:"Nivel 1", say:`Soy <b>seguro</b> cuando un <b>adulto</b> me cuida.`, art:fbig("🧑‍🍳")},
+  {char:"nilo", tag:"Nivel 1", say:`Una <b>vela</b> encendida y un <b>adulto</b> cerca. ¿Es seguro o peligro?`, art:frow(fe("🕯️","Vela"),fe("🧑","Adulto")), choices:[{t:"😊 Seguro",ok:true,fb:"⭐ ¡Sí! Con un adulto, el fuego es seguro."},{t:"⚠️ Peligro",ok:false,fb:"Mira otra vez: hay un adulto cuidando. Prueba de nuevo 💛"}]},
+  {char:"nilo", tag:"Nivel 1", say:`Una <b>vela</b> encendida y <b>nadie</b> la cuida. ¿Seguro o peligro?`, art:frow(fe("🕯️","Vela"),fe("🚫","Sin adulto")), choices:[{t:"😊 Seguro",ok:false,fb:"Sin un adulto cerca, mejor avisar. Prueba otra vez 💛"},{t:"⚠️ Peligro",ok:true,fb:"⭐ ¡Bien! Sin adulto, hay que avisar."}]},
+
+  {char:"fito", tag:"Nivel 2 · ¿Para qué sirve?", say:`El fuego <b>ayuda</b> cuando un adulto lo usa:`, art:frow(fe("🍳","Cocinar"),fe("🔥","Calentar"),fe("💡","Dar luz"),fe("🏕️","Fogata"))},
+  {char:"nilo", tag:"Nivel 2", say:`¿Quién debe <b>usar</b> el fuego?`, art:fbig("🤔"), choices:[{t:"🧑 Un adulto",ok:true,fb:"⭐ ¡Exacto! Solo un adulto."},{t:"🧒 Un niño",ok:false,fb:"El fuego lo usa un adulto. Inténtalo otra vez 💛"}]},
+
+  {char:"fito", tag:"Nivel 3 · Qué no hacer", say:`Estas cosas me hacen <b>crecer demasiado</b>:`, art:frow(fe("🚫","Cerillos"),fe("🚫","Encendedor"),fe("🚫","Papeles"),fe("🚫","Cortinas"),fe("🚫","Gas"))},
+  {char:"nilo", tag:"Nivel 3", say:`Encuentras un <b>encendedor</b>. ¿Qué haces?`, art:fbig("🔥"), choices:[{t:"🧑 Aviso a un adulto",ok:true,fb:"⭐ ¡Muy bien! Avisar es lo correcto."},{t:"🙈 Juego con él",ok:false,fb:"Eso puede hacer crecer a Fito demasiado. Mejor avisa 💛"}]},
+
+  {char:"fito", tag:"Nivel 4 · ¿Qué es un incendio?", say:`Mira la casa. Primero está <b>normal</b> 🏠.`, art:`<div class="scene">🏠</div>`},
+  {char:"fito", tag:"Nivel 4", say:`Sale un poco de <b>humo</b>…`, art:`<div class="scene">🏠💨</div>`},
+  {char:"fito", tag:"Nivel 4", say:`Ahora hay <b>fuego</b>. Cuando el fuego <b>sale de su lugar</b>, se llama <b>incendio</b>.`, art:`<div class="scene">🏠🔥</div>`},
+
+  {char:"nilo", tag:"Nivel 5 · ¿Qué hago?", say:`Si veo un incendio, hago esto, con calma:`, art:fseq(fsi("👀","Veo humo"),fsi("🚶","Salgo"),fsi("🧑","Busco un adulto"),fsi("📞","911"),fsi("🚒","Bomberos"))},
+  {char:"nilo", tag:"Nivel 5", say:`Ves <b>humo</b> en casa. ¿Qué haces primero?`, art:fbig("💨"), choices:[{t:"🚶 Salgo y aviso a un adulto",ok:true,fb:"⭐ ¡Sí! Salir y avisar."},{t:"🙈 Me escondo",ok:false,fb:"Mejor salir y avisar a un adulto. Otra vez 💛"}]},
+
+  {char:"fito", tag:"Nivel 6 · Nunca regresar", say:`Si ya <b>salimos</b>, <b>nunca</b> regresamos por juguetes. Tú eres lo más importante 💙.`, art:`<div class="scene">🧍🏠🔥</div>`},
+  {char:"nilo", tag:"Nivel 6", say:`Ya saliste, pero olvidaste un juguete adentro. ¿Qué haces?`, art:fbig("🧸"), choices:[{t:"🧍 Me quedo afuera y espero",ok:true,fb:"⭐ ¡Muy bien! Nunca regresamos."},{t:"🏃 Entro por el juguete",ok:false,fb:"Nunca regresamos. Los juguetes se reponen 💛"}]},
+
+  {char:"fito", tag:"Nivel 7 · El humo", say:`El fuego no es lo único peligroso… el <b>humo</b> también hace daño.`, art:fbig("💨")},
+  {char:"nilo", tag:"Nivel 7", say:`Hay dos caminos. ¿Cuál eliges?`, art:frow(fe("💨","Con humo"),fe("✨","Limpio")), choices:[{t:"✨ El camino limpio",ok:true,fb:"⭐ ¡Sí! El aire limpio."},{t:"💨 El camino con humo",ok:false,fb:"El humo hace daño. Elige el limpio 💛"}]},
+
+  {char:"fito", tag:"Nivel 8 · Si hay humo", say:`Si hay humo, hago esto:`, art:fseq(fsi("🧎","Me agacho"),fsi("🤧","Cubro nariz y boca"),fsi("➡️","Salgo"))},
+  {char:"nilo", tag:"Nivel 8", say:`Hay humo arriba. ¿Cómo avanzo?`, art:fbig("💨"), choices:[{t:"🧎 Agachado y cubriendo la nariz",ok:true,fb:"⭐ ¡Muy bien! Abajo hay menos humo."},{t:"🏃 Corriendo de pie",ok:false,fb:"Mejor agacharse: abajo hay menos humo 💛"}]},
+
+  {char:"bruno", tag:"Nivel 9 · Los bomberos", say:`Hola, soy <b>Bruno el Bombero</b> 👨‍🚒. Soy <b>tranquilo</b> y <b>amable</b>, y ayudo a todos. Si ves fuego, me llamas al <b>911</b>.`, art:fbig("🚒")},
+  {char:"bruno", tag:"Nivel 9", say:`¿A quién llamamos si hay un incendio?`, art:fbig("📞"), choices:[{t:"🚒 A los bomberos (911)",ok:true,fb:"⭐ ¡Exacto! Al 911."},{t:"🙊 A nadie",ok:false,fb:"Llamamos a los bomberos al 911 💛"}]},
+
+  {char:"nilo", tag:"Juego · Escenario A", say:`Hay una <b>vela</b> y un <b>adulto</b> la cuida. ¿Qué hacemos?`, art:frow(fe("🕯️","Vela"),fe("🧑","Adulto")), choices:[{t:"😊 Todo bien, está seguro",ok:true,fb:"⭐ ¡Sí!"},{t:"💦 La apagamos nosotros",ok:false,fb:"Si un adulto la cuida, está bien. Otra vez 💛"}]},
+  {char:"nilo", tag:"Juego · Escenario B", say:`Un niño juega con un <b>encendedor</b>. ¿Qué hacemos?`, art:fbig("🔥"), choices:[{t:"🧑 Avisar a un adulto",ok:true,fb:"⭐ ¡Muy bien!"},{t:"🙈 Jugar también",ok:false,fb:"Avisamos a un adulto 💛"}]},
+  {char:"nilo", tag:"Juego · Escenario C", say:`Sale <b>humo</b> de la cocina. ¿Qué hacemos?`, art:fbig("💨"), choices:[{t:"🚶 Salimos y avisamos",ok:true,fb:"⭐ ¡Sí!"},{t:"🎮 Seguimos jugando",ok:false,fb:"Salimos y avisamos 💛"}]},
+  {char:"bruno", tag:"Juego · Escenario D", say:`El incendio terminó. ¿Qué hacemos?`, art:fbig("🚒"), choices:[{t:"🧍 Esperar al bombero",ok:true,fb:"⭐ ¡Perfecto!"},{t:"🏃 Entrar corriendo",ok:false,fb:"Esperamos a los bomberos 💛"}]}
+];
+
+let fireIdx = 0;
+state.fireDone = Store.get("fireDone", false);
+function startFireSafety(){
+  fireIdx = 0;
+  $("home").classList.add("hidden");
+  $("game").classList.add("hidden");
+  $("fire").classList.remove("hidden");
+  window.scrollTo(0,0);
+  fireRender();
+}
+function fireRender(){
+  const s = FIRE_STEPS[fireIdx];
+  $("fireAva").innerHTML = fireAvatar(s.char);
+  $("fireMsg").innerHTML = s.say;
+  $("fireMsg").className = "nilobubble"+(s.char==="fito"?" warm":"");
+  $("fireArt").innerHTML = s.art || "";
+  $("fireProgress").textContent = (s.tag||("Paso "+(fireIdx+1)))+`  ·  ${fireIdx+1}/${FIRE_STEPS.length}`;
+  $("fireFeedback").textContent = "";
+  $("fireFeedback").className = "feedback";
+  const act = $("fireActions"); act.innerHTML = "";
+  if(s.choices){
+    s.choices.forEach((c,idx)=>{
+      const b=document.createElement("button");
+      b.className="vopt"; b.type="button"; b.innerHTML=c.t;
+      b.onclick=()=>fireChoose(idx,b);
+      act.appendChild(b);
+    });
+  } else {
+    const b=document.createElement("button");
+    b.className="vopt full fire-next"; b.type="button";
+    b.textContent = (fireIdx===FIRE_STEPS.length-1) ? "Terminar ⭐" : "Siguiente ▶";
+    b.onclick=fireNext;
+    act.appendChild(b);
+  }
+}
+function fireChoose(idx, btn){
+  const c = FIRE_STEPS[fireIdx].choices[idx];
+  if(btn.disabled) return;
+  if(c.ok){
+    [...$("fireActions").children].forEach(b=>{ b.disabled=true; if(b!==btn) b.classList.add("locked"); });
+    btn.classList.add("vok");
+    $("fireFeedback").className="feedback";
+    $("fireFeedback").innerHTML = c.fb || "⭐ ¡Muy bien! Fito está feliz porque seguiste las reglas.";
+    sndGood(); burstConfetti(6);
+    setTimeout(fireNext, 1150);
+  } else {
+    btn.classList.add("vbad"); btn.disabled=true;
+    sndOops();
+    $("fireFeedback").className="feedback warm";
+    $("fireFeedback").innerHTML = c.fb || "Casi… piensa con calma y prueba otra vez 💛";
+  }
+}
+function fireNext(){
+  fireIdx++;
+  if(fireIdx>=FIRE_STEPS.length){ fireFinish(); return; }
+  fireRender();
+  window.scrollTo(0,0);
+}
+function fireFinish(){
+  state.fireDone = true; Store.set("fireDone", true);
+  grantSticker("st_fito"); grantSticker("st_bruno");
+  burstConfetti(50); playAnim("confeti"); sndBadge();
+  modal(`
+    <div class="welcomeava" id="fireFinAva"></div>
+    <div class="big">🚒</div>
+    <h2>¡Lo lograste! 🎉</h2>
+    <p class="lead">🔥 <b>Fito</b> está feliz porque seguiste las reglas. 👨‍🚒 <b>Bruno</b> dice: "¡Muy bien! Ahora todos están seguros."</p>
+    <p class="lead">Ya sabes reconocer el fuego seguro, qué hacer ante un incendio y <b>nunca regresar</b>. 💙</p>
+    <p class="lead">🎁 ¡Descubriste las <b>pegatinas de Fito y Bruno</b>! Búscalas en tu álbum 🎴.</p>
+    <button class="btn btn-primary" id="fireFinClose" style="width:100%;margin-top:8px">Volver al inicio</button>
+  `);
+  const a=$("fireFinAva"); if(a) a.innerHTML=fireAvatar("bruno");
+  $("fireFinClose").onclick=()=>{ closeModal(); goHome(); };
+  checkBadges();
 }
 
 function showBadgeModal(list){
@@ -2207,11 +2404,15 @@ function goHome(){
   stopRace();
   $("fly").classList.add("hidden");
   $("game").classList.add("hidden");
+  $("fire").classList.add("hidden");
   $("home").classList.remove("hidden");
   renderArea(); renderWorlds(); renderLevels(); syncAreaLead();
   window.scrollTo(0,0);
 }
-$("btnStart").onclick=()=>{ if(sessionOver()) sessionGate(); else startPack(); };
+$("btnStart").onclick=()=>{
+  if(state.area==="seguridad"){ startFireSafety(); return; }
+  if(sessionOver()) sessionGate(); else startPack();
+};
 $("btnHome").onclick=goHome;
 $("btnBadges").onclick=showBadges;
 $("btnMap").onclick=showMap;
@@ -2229,6 +2430,7 @@ $("btnHint").onclick=()=>{
   $("feedback").textContent=`Pista: la respuesta tiene ${(""+q.ans).length} cifra(s) y empieza por ${(""+q.ans)[0]}.`;
 };
 $("btnBreathe").onclick=showBreathe;
+$("btnFireHome").onclick=goHome;
 
 /* arrastre de pegatinas (mouse + touch) */
 document.addEventListener("pointermove", sheetMove);
@@ -2260,6 +2462,9 @@ setNiloAvatars();
 updateDayStreak();
 maybeWelcome();
 checkConstructions().forEach(c=> toast(`🪵 ¡Bastián construyó: ${c.name}! (${daysReturned} días de visita)`));
+/* Pegatinas de personaje: se descubren al terminar su reto (retroactivo si ya lo hizo) */
+if(bastianFound() && grantSticker("st_bastian")) toast("🎁 ¡Descubriste la pegatina de Bastián! 🦫");
+if(state.fireDone){ grantSticker("st_fito"); grantSticker("st_bruno"); }
 
 /* Registro del Service Worker (PWA) — solo funciona vía http/https, no con file:// */
 if("serviceWorker" in navigator){

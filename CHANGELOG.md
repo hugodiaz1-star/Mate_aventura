@@ -6,6 +6,41 @@ Registro de cambios del proyecto. La versión más reciente va arriba.
 
 ---
 
+## v1.11 — 2026-06-30  ·  *Imágenes propias de Fito y Bruno*
+
+**Cambios**
+- 🔥👨‍🚒 **Fito y Bruno** ya tienen **ilustración propia**. Sus avatares (`Fito.png`, `Bruno.png`) se recortaron de las imágenes de cuerpo completo (guardadas como `fito_personaje.png` / `bruno_personaje.png`). Se usan en la lección de Seguridad y en sus **pegatinas**.
+
+> Subido el caché del service worker a **v13** (incluye `Fito.png` y `Bruno.png`).
+
+---
+
+## v1.10 — 2026-06-30  ·  *Pegatinas de personaje (Fito, Bruno y Bastián)*
+
+**Nuevo**
+- 🌟 **Pegatinas especiales con la cara del personaje**, que el niño **descubre al terminar su reto**:
+  - 🔥 **Fito** y 👨‍🚒 **Bruno** → al completar la lección de **Seguridad** (incendios).
+  - 🦫 **Bastián** → al desbloquear su primera **construcción** (por constancia).
+- 🎴 Aparecen en el **Álbum Matemágico** en una sección aparte ("🌟 Especiales · descúbrelas en los retos"), bloqueadas con ❓ hasta lograrse, y se pueden **pegar en la lámina** como cualquier pegatina (ahora la lámina admite **imágenes**, no solo emojis).
+- 🎁 Mensaje de descubrimiento al ganarlas (en la celebración del reto y con aviso al volver a abrir la app).
+- Las pegatinas especiales **no** salen en las misiones normales (esas siguen dando las 20 de siempre).
+
+> Subido el caché del service worker a **v12**.
+
+---
+
+## v1.9 — 2026-06-30  ·  *Nueva área: Seguridad contra incendios (Fito y Bruno)*
+
+**Nuevo**
+- 🔥 **Área "Seguridad"**: lección guiada e interactiva sobre el fuego y los incendios, con el mismo enfoque de la app (claro, visual, **sin generar miedo**, con reglas y refuerzo positivo).
+- 🧯 **Personajes nuevos**: **Fito el Fuego** ("puedo ayudarte… pero nunca juegues conmigo") y **Bruno el Bombero** (tranquilo y amable). Por ahora son **dibujos SVG**; se pueden sustituir por `Fito.png` / `Bruno.png` cuando quieras (como Nilo/Bastián).
+- 📚 **9 niveles + juego de escenarios** (26 pasos): dónde hay fuego y si hay un adulto, para qué sirve, qué no hacer, qué es un incendio (humo→fuego), qué hacer (salir → adulto → 911 → bomberos), **nunca regresar**, el peligro del **humo**, cómo avanzar agachado, y los bomberos. Cada pregunta tiene refuerzo positivo y permite reintentar sin castigo.
+- 🚒 **Insignia "Seguro con el fuego"** al completar la lección, con celebración de Fito y Bruno.
+
+> Subido el caché del service worker a **v11**.
+
+---
+
 ## v1.8 — 2026-06-30  ·  *Arte nuevo: Nilo azul, Bastián y portada*
 
 **Cambios**
