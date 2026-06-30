@@ -6,6 +6,89 @@ Registro de cambios del proyecto. La versión más reciente va arriba.
 
 ---
 
+## v1.8 — 2026-06-30  ·  *Arte nuevo: Nilo azul, Bastián y portada*
+
+**Cambios**
+- 🦦 **Nilo ahora es azul** (acorde al Art Bible: color *Azul*, símbolo *Brújula*): nutria exploradora con goggles y brújula. Se recortó su retrato de `nilo_new.png`, **quitando el fondo negro** (transparente), y se guardó como `Nilo.png`.
+- 🦫 **Nuevo Bastián**: avatar actualizado desde `bastian_new.png` (beaver constructor con maza, brújula y planos).
+- 🖼️ **Portada** en la pantalla de inicio: `portada_new.png` (con todos los personajes y el lema "Una aventura donde aprender también construye mundos").
+- 🧭 **Ícono de la app regenerado** con la **cara del nuevo Nilo azul** sobre el degradado de marca (192/512, *maskable* y 180 iOS).
+
+> Subido el caché del service worker a **v10** (incluye la portada y el arte nuevo).
+
+---
+
+## v1.7 — 2026-06-30  ·  *Bastián con imagen y calendario de su lámina*
+
+**Cambios**
+- 🦫 **Imagen real de Bastián**: el avatar `Bastian.png` se recorta de `bastian_personaje.png` (imagen oficial del personaje, cuerpo completo sobre fondo blanco). `bastian_hoja.png` queda como **lámina de referencia** (pose, expresiones, herramientas, construcciones).
+- 🏗️ **Calendario de construcciones según la lámina**: árbol (5), puente (10), cabaña (20), **molino (30)**, estación (45), puerto (60), **faro (90)** y la **Gran Base Exploradora (180)**.
+- 💛 **Desbloqueo por *días de visita acumulados*, no por racha estricta.** Decisión de diseño para respetar *"nunca se pierde progreso / sin castigo"*: faltar un día **no borra** el avance; solo se progresa al volver. La **racha consecutiva** se sigue mostrando como ánimo. *(Si prefieres racha estricta, se cambia en un parámetro.)*
+
+> Subido el caché del service worker a **v9** (incluye el `Bastian.png` definitivo).
+
+---
+
+## v1.6 — 2026-06-30  ·  *Alineación con el Art Bible (Bastián, paleta, tipografías)*
+
+Basado en **"Nilo Explorador — Art Bible & Design System" v1.0**.
+
+**Nuevo**
+- 🦫 **Bastián, el Constructor** y su **Bosque del Castor** (parada secreta): se descubre **por constancia, no por velocidad**. Botón 🪵 en la barra abre su campamento.
+- 🏗️ **Construcciones permanentes por días seguidos**: árbol (2 días), puente (3), cabaña (5), gran puente (7), estación (10), puerto (14), observatorio (21) y la **Gran Base de Exploradores** (30). Nunca se pierden, aunque se rompa la racha; el niño ve **crecer su mundo** al regresar cada día.
+- 🗺️ El **mapa de la expedición** muestra ahora la parada secreta del Bosque del Castor.
+- ✍️ **Frase oficial** del bible en el inicio y en la bienvenida: *"No importa qué tan lejos llegues hoy. Lo importante es querer regresar mañana."*
+
+**Cambios**
+- 🔤 **Tipografías oficiales**: Fredoka (títulos), Baloo 2 (subtítulos) y Nunito (texto), con respaldo a fuentes del sistema. *(Se cargan por internet la primera vez; luego quedan en caché. Sin conexión nunca, se ven con las del sistema.)*
+- 🎨 **Paleta** ampliada con **turquesa `#37D5D6`** (y café/gris para Bastián).
+- 🐉 **Draco** pasa de "jefe final" a **"Gran reto · guardián del conocimiento"** (tono más amable, acorde al bible).
+- 🧭 Nombres de las **paradas** afinados al bible (Taller de Robots, Cohete de Juguete, …).
+
+> Subido el caché del service worker a **v7**.
+
+---
+
+## v1.5 — 2026-06-30  ·  *Mapa de expedición, bienvenida, tramos de viaje e ícono nuevo*
+
+**Nuevo**
+- 🗺️ **Mapa de la expedición** (botón 🗺️ en la barra): muestra las 8 paradas del viaje con su estado — completadas (✓), la parada **actual** resaltada (📍) y las bloqueadas (🔒) como "lugar secreto". Cada parada lleva su número, lugar y personaje.
+- 🧭 **Tramos del viaje**: cada mundo es ahora una **parada con nombre** (p. ej. "Parada 1 · La Pista de Arranque"). Nilo la anuncia al empezar la misión, dando hilo a la aventura.
+- 👋 **Pantalla de bienvenida** (solo la primera vez): Nilo invita a la expedición; es saltable ("¡Vamos!") y ofrece ver el mapa. No se repite (se recuerda con `seenWelcome`).
+- 🎨 **Ícono nuevo** acorde a "Nilo Explorador": Nilo sobre fondo degradado azul→morado con una **brújula** de explorador. Reemplazados `icon-192/512`, sus versiones *maskable* y `icon-180` (iOS).
+
+> Subido el caché del service worker a **v6** (para que los dispositivos tomen los iconos nuevos).
+
+---
+
+## v1.4 — 2026-06-30  ·  *Rebranding: "Nilo Explorador" + storytelling de expedición*
+
+**Cambios**
+- 🧭 **Nuevo nombre: "Nilo Explorador"** (subtítulo *"Aprende jugando"*). El nombre anterior, "Mate Aventura", se quedaba corto al haber ya dos áreas. Se conservan a **Nilo** y el tono de aventura como anclas familiares para el niño. Actualizados título, barra de marca, `manifest.json` (nombre de instalación), `index.html` y el meta de iOS.
+- 📖 **Storytelling de expedición**: Nilo presenta el juego como un viaje para explorar **números** y **palabras** y "sumar amigos por el camino". El paso de elegir materia pasa a llamarse **"¿Qué exploramos hoy?"** con las opciones **Números 🔢** y **Palabras 🗣️**. Al completar una misión, el personaje del mundo **"se une a la expedición"**.
+- 🧱 Se mantiene el término **"mundo"** en la mecánica (desbloqueo progresivo) para no romper la familiaridad del niño.
+
+> Subido el caché del service worker a **v5**.
+
+---
+
+## v1.3 — 2026-06-30  ·  *Nueva área: Vocabulario (inglés ↔ español)*
+
+**Nuevo**
+- 🗣️ **Área de Vocabulario**: además de Matemáticas, ahora se elige un **área** al inicio. El modo Vocabulario enseña traducción **español ↔ inglés** con **opción múltiple** (4 botones).
+- 🖼️ **Niveles de vocabulario**: *Básico* (muestra la palabra **con dibujo/emoji** de ayuda, siempre español→inglés), *Medio* (solo la palabra, dirección al azar) y *Mezcla*.
+- 🧩 **Banco de palabras** de ~70 términos en categorías (animales, colores, comida, familia, cuerpo, naturaleza, objetos, números). Es fácil de ampliar: basta con añadir objetos `{es,en,emoji,cat,lvl}` a la lista `WORDS`.
+- ♻️ **Reutiliza todo el sistema existente**: misma misión de 6 retos, **mismas recompensas** (Álbum Matemágico, pegatinas, animaciones), **insignias**, **personajes y Nilo como guía**, la **carrera vs. la liebre**, los **power-ups**, las **lecciones de conducta** y los **ajustes de accesibilidad** (sin castigo, refuerzo positivo, permite reintentar).
+- 🧠 **Distractores inteligentes**: las opciones incorrectas se eligen de la **misma categoría** cuando es posible, para que el reto sea significativo.
+
+**Notas técnicas**
+- Generador `makeWordOp` / `makeWordPack` paralelo a `makeOp`; la pantalla de pregunta cambia según `q.type` (`setGameMode`), ocultando la operación vertical y el teclado numérico y mostrando los botones de opción.
+- Acierto unificado en `registerCorrect()` (lo usan tanto matemáticas como vocabulario), así las recompensas y la progresión son idénticas.
+
+> Subido el caché del service worker a **v4**.
+
+---
+
 ## v1.2 — 2026-06-21  ·  *Sesión amable (tiempo sin angustia)*
 
 **Nuevo**

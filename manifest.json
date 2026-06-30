@@ -1,7 +1,7 @@
 {
-  "name": "Mate Aventura",
-  "short_name": "Mate Aventura",
-  "description": "Aventura de matemáticas para practicar sumas y restas con personajes, recompensas y un guía: Nilo el Navegante.",
+  "name": "Nilo Explorador",
+  "short_name": "Nilo",
+  "description": "Aprende jugando con Nilo el Navegante: una expedición de números (sumas y restas) y palabras (inglés y español), con personajes, recompensas y refuerzo positivo.",
   "lang": "es-MX",
   "start_url": "MateAventura.html",
   "scope": "./",

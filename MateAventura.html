@@ -3,16 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mate Aventura — Repaso de 1º a 2º</title>
+<title>Nilo Explorador — Aprende jugando</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#3F7CF0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Mate Aventura">
+<meta name="apple-mobile-web-app-title" content="Nilo Explorador">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+<!-- Tipografías oficiales (Art Bible). Si no hay internet, se usan fuentes del sistema. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Baloo+2:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#f4f7fb;
@@ -26,13 +30,16 @@
     --warm:#ffb13d;
     --pink:#ff7eb6;
     --line:#e3e9f2;
+    --turquesa:#37d5d6;
+    --cafe:#a9743f;
+    --gris:#ececec;
     --shadow:0 10px 30px rgba(40,60,110,.10);
     --r:22px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
-    font-family:"Trebuchet MS","Segoe UI",Verdana,system-ui,sans-serif;
+    font-family:"Nunito","Trebuchet MS","Segoe UI",Verdana,system-ui,sans-serif;
     background:linear-gradient(180deg,#eef3fb,#f6f8fc);
     color:var(--ink);
     -webkit-tap-highlight-color:transparent;
@@ -40,6 +47,9 @@
     min-height:100vh;
   }
   body.reduce-motion *{animation:none!important;transition:none!important}
+  /* Tipografía oficial (Art Bible): Fredoka títulos · Baloo 2 subtítulos · Nunito texto */
+  h1,h2,h3,.brand,.charname{font-family:"Fredoka","Nunito","Trebuchet MS",sans-serif;font-weight:600}
+  .lead,.vsub,.nilobubble,.mstop-name{font-family:"Baloo 2","Nunito","Trebuchet MS",sans-serif}
   .wrap{max-width:880px;margin:0 auto;padding:16px 14px 60px}
   .hidden{display:none!important}
 
@@ -309,14 +319,55 @@
     .reveal-stage{width:200px;height:200px}
     .reveal-stage svg{width:172px;height:172px}
   }
+
+  /* ----- Modo Vocabulario ----- */
+  .vocab{margin-top:4px}
+  .vprompt{display:flex;flex-direction:column;align-items:center;gap:6px;margin:6px 0 4px}
+  .vprompt .vemoji{font-size:64px;line-height:1}
+  .vprompt .vword{font-size:40px;font-weight:800;color:#2b3960;letter-spacing:.5px}
+  .vprompt .vflag{font-size:14px;font-weight:bold;color:#9fb0cd;text-transform:uppercase;letter-spacing:1px}
+  .vsub{text-align:center;color:#5a6b8c;font-size:18px;font-weight:bold;margin-bottom:12px}
+  .voptions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .vopt{padding:18px 12px;border:none;border-radius:18px;background:#eef3ff;color:#2b3960;
+        font-size:22px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);
+        transition:transform .08s ease, background .15s ease;min-height:64px}
+  .vopt:hover{transform:translateY(-2px)}
+  .vopt:active{transform:translateY(0)}
+  .vopt.vok{background:#4CB763;color:#fff}
+  .vopt.vbad{background:#ffd9d9;color:#b03a3a}
+  .vopt.locked{opacity:.55;cursor:default}
+  .vopt:disabled{cursor:default}
+  @media (max-width:480px){ .vprompt .vword{font-size:34px} .vopt{font-size:20px} }
+
+  /* ----- Mapa de la expedición ----- */
+  .mapwrap{display:flex;flex-direction:column;margin:10px 0;text-align:left}
+  .mstop{display:flex;align-items:center;gap:12px;background:#f3f7ff;border-radius:16px;padding:10px 12px}
+  .mstop.current{background:#fff7e6;outline:3px solid #ffd34d}
+  .mstop.locked{opacity:.55}
+  .mstop-pic{width:46px;height:46px;border-radius:50%;overflow:hidden;background:#fff;display:flex;
+             align-items:center;justify-content:center;font-size:24px;flex:0 0 auto;box-shadow:var(--shadow)}
+  .mstop-pic img{width:100%;height:100%;object-fit:cover}
+  .mstop-body{flex:1;min-width:0}
+  .mstop-place{font-size:11px;color:#7a8aa8;font-weight:bold;text-transform:uppercase;letter-spacing:.5px}
+  .mstop-name{font-size:17px;font-weight:800;color:#2b3960}
+  .mstop-badge{font-size:22px;flex:0 0 auto}
+  .mstop.done .mstop-badge{color:#16a06f}
+  .mstop-link{width:3px;height:14px;background:#cdd9f0;margin:3px 0 3px 33px;border-radius:2px}
+
+  /* ----- Bienvenida (primera vez) ----- */
+  .welcomeava{width:78px;height:78px;border-radius:50%;overflow:hidden;margin:2px auto 4px;
+              background:#fff;box-shadow:var(--shadow)}
+  .welcomeava img,.welcomeava svg{width:100%;height:100%;object-fit:cover}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <div class="topbar">
-    <div class="brand"><span class="logo">🚀</span> Mate Aventura</div>
+    <div class="brand"><span class="logo">🧭</span> Nilo Explorador</div>
     <div class="topbtns">
+      <button class="iconbtn" id="btnMap" title="Mapa de la expedición">🗺️</button>
+      <button class="iconbtn" id="btnCamp" title="Campamento de Bastián">🪵</button>
       <button class="iconbtn" id="btnMagic" title="Álbum Matemágico">🎴</button>
       <button class="iconbtn" id="btnAlbum" title="Mi álbum de animales">🦋</button>
       <button class="iconbtn" id="btnBadges" title="Mis insignias">🏅</button>
@@ -326,28 +377,35 @@
 
   <!-- ===== HOME ===== -->
   <section id="home">
+    <img class="cover" src="portada_new.png" alt="Nilo Explorador — una aventura donde aprender también construye mundos" onerror="this.style.display='none'">
     <div class="nilobar nilobar-home">
       <div class="niloava" id="niloAvaHome"></div>
-      <div class="nilobubble"><b>¡Hola! Soy Nilo el Navegante 🦦</b><br>Vamos a practicar matemáticas juntos. Yo te acompaño en todo momento.</div>
+      <div class="nilobubble"><b>¡Hola! Soy Nilo el Navegante 🦦</b><br>¡Salimos de expedición! Vamos a explorar <b>números</b> y <b>palabras</b>, y a sumar amigos por el camino. Yo te acompaño en todo momento.</div>
     </div>
     <div class="card">
       <h1>¡Hola, explorador! 👋</h1>
-      <p class="lead">Resuelve <b>6 operaciones</b> y descubre quién aparece en la imagen secreta. Cada misión te da una <b>insignia</b>. ¡Tú puedes!</p>
+      <p class="lead">Completa <b>6 retos</b> y descubre quién aparece en la imagen secreta. Cada misión te da una <b>insignia</b>. ¡Tú puedes!</p>
     </div>
 
     <div class="card">
-      <h2>1) Elige tu mundo</h2>
+      <h2>1) ¿Qué exploramos hoy?</h2>
+      <p class="lead" style="margin-bottom:10px">Elige tu aventura de hoy.</p>
+      <div class="chips" id="areaChips"></div>
+    </div>
+
+    <div class="card">
+      <h2>2) Elige tu mundo</h2>
       <div class="worlds" id="worldPicker"></div>
     </div>
 
     <div class="card">
-      <h2>2) Elige tu nivel</h2>
-      <p class="lead" style="margin-bottom:10px">Mezcla repaso de 1º con el reto de 2º (dos dígitos).</p>
+      <h2>3) Elige tu nivel</h2>
+      <p class="lead" id="levelLead" style="margin-bottom:10px">Mezcla repaso de 1º con el reto de 2º (dos dígitos).</p>
       <div class="chips" id="levelChips"></div>
     </div>
 
     <button class="btn btn-primary" id="btnStart" style="width:100%;font-size:22px;padding:20px">▶ Empezar misión</button>
-    <p class="footer-note">Hecho con cariño para practicar a su ritmo 💙</p>
+    <p class="footer-note" style="font-style:italic">"No importa qué tan lejos llegues hoy. Lo importante es querer regresar mañana." 🧭</p>
     <p class="footer-note credit">Hecho por Hugo I. Díaz · Sin fines de lucro · Distribución libre</p>
   </section>
 
@@ -397,6 +455,14 @@
       </div>
       <div class="help-legend" id="helpLegend"></div>
       <div class="keypad" id="keypad"></div>
+
+      <!-- Modo Vocabulario (opción múltiple) -->
+      <div class="vocab hidden" id="vocabBox">
+        <div class="vprompt" id="vPrompt"></div>
+        <div class="vsub" id="vSub"></div>
+        <div class="voptions" id="vOptions"></div>
+      </div>
+
       <div class="feedback" id="feedback"></div>
     </div>
     <div class="btn-row">
@@ -589,7 +655,7 @@ const WORLDS = [
     </svg>`
   },
   {
-    id:"dragon", cls:"w-dragon", name:"Dragones", char:"Draco", role:"Jefe Final", intro:"Soy el jefe final. ¡Demuestra todo lo que has aprendido!",
+    id:"dragon", cls:"w-dragon", name:"Dragones", char:"Draco", role:"Gran reto", intro:"Soy Draco, guardián del conocimiento. Muéstrame lo que sabes, con calma y a tu ritmo.",
     icon:`<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="26" fill="#9d7bff"/><path d="M38 30 l-6 -12 11 7z" fill="#6e48aa"/><path d="M62 30 l6 -12 -11 7z" fill="#6e48aa"/><circle cx="42" cy="48" r="5" fill="#2b3142"/><circle cx="58" cy="48" r="5" fill="#2b3142"/><path d="M44 60 q6 5 12 0" stroke="#5a3e8e" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
     svg:`<svg viewBox="0 0 200 200">
       <ellipse cx="100" cy="178" rx="56" ry="9" fill="#000" opacity=".08"/>
@@ -650,11 +716,120 @@ const WORLDS = [
 ];
 
 /* ---------- Niveles ---------- */
-const LEVELS = [
+/* ---------- Tramos de la expedición ----------
+   El orden coincide con el de WORLDS (orden de desbloqueo).
+   Da a cada mundo un "lugar" en el viaje de Nilo. */
+const WORLD_LEG = {
+  race:  {n:1, place:"La Pista de Arranque"},
+  hero:  {n:2, place:"Taller de Robots"},
+  toy:   {n:3, place:"Cohete de Juguete"},
+  music: {n:4, place:"Escenario de Estrellas"},
+  dino:  {n:5, place:"Valle de los Dinos"},
+  dragon:{n:6, place:"Montaña del Dragón"},
+  cat:   {n:7, place:"Nube de la Calma"},
+  octo:  {n:8, place:"Arrecife Tranquilo"}
+};
+
+const LEVELS_MATE = [
   {id:"repaso", label:"Repaso ⭐", desc:"Sumas y restas hasta 20"},
   {id:"dos",    label:"Dos dígitos 🚀", desc:"Sin llevar / sin prestar"},
   {id:"reto",   label:"Reto 🏆", desc:"Con llevar y prestar"},
   {id:"mix",    label:"Mezcla 🎲", desc:"Un poco de todo"}
+];
+const LEVELS_VOCAB = [
+  {id:"vfacil", label:"Básico ⭐", desc:"Con dibujo de ayuda"},
+  {id:"vmedio", label:"Medio 🚀", desc:"Solo la palabra"},
+  {id:"vmix",   label:"Mezcla 🎲", desc:"Un poco de todo"}
+];
+const AREAS = [
+  {id:"mate",  label:"Números 🔢", desc:"Sumas y restas"},
+  {id:"vocab", label:"Palabras 🗣️", desc:"Inglés y español"}
+];
+function currentLevels(){ return state.area==="vocab" ? LEVELS_VOCAB : LEVELS_MATE; }
+
+/* ---------- Banco de palabras (Vocabulario inglés ↔ español) ----------
+   lvl 1 = básico (concreto, con emoji de ayuda) · lvl 2 = medio
+   Crece esta lista libremente: solo añade objetos {es,en,emoji,cat,lvl}. */
+const WORDS = [
+  // Animales
+  {es:"perro",en:"dog",emoji:"🐶",cat:"Animales",lvl:1},
+  {es:"gato",en:"cat",emoji:"🐱",cat:"Animales",lvl:1},
+  {es:"pájaro",en:"bird",emoji:"🐦",cat:"Animales",lvl:1},
+  {es:"pez",en:"fish",emoji:"🐟",cat:"Animales",lvl:1},
+  {es:"caballo",en:"horse",emoji:"🐴",cat:"Animales",lvl:1},
+  {es:"vaca",en:"cow",emoji:"🐮",cat:"Animales",lvl:1},
+  {es:"conejo",en:"rabbit",emoji:"🐰",cat:"Animales",lvl:2},
+  {es:"oso",en:"bear",emoji:"🐻",cat:"Animales",lvl:1},
+  {es:"león",en:"lion",emoji:"🦁",cat:"Animales",lvl:1},
+  {es:"elefante",en:"elephant",emoji:"🐘",cat:"Animales",lvl:2},
+  {es:"mono",en:"monkey",emoji:"🐵",cat:"Animales",lvl:1},
+  {es:"pato",en:"duck",emoji:"🦆",cat:"Animales",lvl:1},
+  // Colores
+  {es:"rojo",en:"red",emoji:"🔴",cat:"Colores",lvl:1},
+  {es:"azul",en:"blue",emoji:"🔵",cat:"Colores",lvl:1},
+  {es:"verde",en:"green",emoji:"🟢",cat:"Colores",lvl:1},
+  {es:"amarillo",en:"yellow",emoji:"🟡",cat:"Colores",lvl:1},
+  {es:"negro",en:"black",emoji:"⚫",cat:"Colores",lvl:1},
+  {es:"blanco",en:"white",emoji:"⚪",cat:"Colores",lvl:1},
+  {es:"morado",en:"purple",emoji:"🟣",cat:"Colores",lvl:2},
+  {es:"rosa",en:"pink",emoji:"🌸",cat:"Colores",lvl:2},
+  // Comida
+  {es:"manzana",en:"apple",emoji:"🍎",cat:"Comida",lvl:1},
+  {es:"plátano",en:"banana",emoji:"🍌",cat:"Comida",lvl:1},
+  {es:"pan",en:"bread",emoji:"🍞",cat:"Comida",lvl:1},
+  {es:"leche",en:"milk",emoji:"🥛",cat:"Comida",lvl:1},
+  {es:"agua",en:"water",emoji:"💧",cat:"Comida",lvl:1},
+  {es:"huevo",en:"egg",emoji:"🥚",cat:"Comida",lvl:1},
+  {es:"queso",en:"cheese",emoji:"🧀",cat:"Comida",lvl:2},
+  {es:"zanahoria",en:"carrot",emoji:"🥕",cat:"Comida",lvl:2},
+  {es:"fresa",en:"strawberry",emoji:"🍓",cat:"Comida",lvl:2},
+  {es:"pastel",en:"cake",emoji:"🍰",cat:"Comida",lvl:2},
+  // Familia
+  {es:"mamá",en:"mom",emoji:"👩",cat:"Familia",lvl:1},
+  {es:"papá",en:"dad",emoji:"👨",cat:"Familia",lvl:1},
+  {es:"hermano",en:"brother",emoji:"👦",cat:"Familia",lvl:2},
+  {es:"hermana",en:"sister",emoji:"👧",cat:"Familia",lvl:2},
+  {es:"bebé",en:"baby",emoji:"👶",cat:"Familia",lvl:1},
+  {es:"abuela",en:"grandma",emoji:"👵",cat:"Familia",lvl:2},
+  {es:"abuelo",en:"grandpa",emoji:"👴",cat:"Familia",lvl:2},
+  // Cuerpo
+  {es:"mano",en:"hand",emoji:"✋",cat:"Cuerpo",lvl:1},
+  {es:"ojo",en:"eye",emoji:"👁️",cat:"Cuerpo",lvl:1},
+  {es:"pie",en:"foot",emoji:"🦶",cat:"Cuerpo",lvl:1},
+  {es:"boca",en:"mouth",emoji:"👄",cat:"Cuerpo",lvl:2},
+  {es:"nariz",en:"nose",emoji:"👃",cat:"Cuerpo",lvl:2},
+  {es:"oreja",en:"ear",emoji:"👂",cat:"Cuerpo",lvl:2},
+  {es:"diente",en:"tooth",emoji:"🦷",cat:"Cuerpo",lvl:2},
+  // Naturaleza
+  {es:"sol",en:"sun",emoji:"☀️",cat:"Naturaleza",lvl:1},
+  {es:"luna",en:"moon",emoji:"🌙",cat:"Naturaleza",lvl:1},
+  {es:"estrella",en:"star",emoji:"⭐",cat:"Naturaleza",lvl:1},
+  {es:"árbol",en:"tree",emoji:"🌳",cat:"Naturaleza",lvl:1},
+  {es:"flor",en:"flower",emoji:"🌼",cat:"Naturaleza",lvl:1},
+  {es:"nube",en:"cloud",emoji:"☁️",cat:"Naturaleza",lvl:2},
+  {es:"lluvia",en:"rain",emoji:"🌧️",cat:"Naturaleza",lvl:2},
+  {es:"nieve",en:"snow",emoji:"❄️",cat:"Naturaleza",lvl:2},
+  {es:"fuego",en:"fire",emoji:"🔥",cat:"Naturaleza",lvl:2},
+  {es:"mar",en:"sea",emoji:"🌊",cat:"Naturaleza",lvl:2},
+  // Objetos / casa
+  {es:"casa",en:"house",emoji:"🏠",cat:"Objetos",lvl:1},
+  {es:"puerta",en:"door",emoji:"🚪",cat:"Objetos",lvl:2},
+  {es:"libro",en:"book",emoji:"📖",cat:"Objetos",lvl:1},
+  {es:"silla",en:"chair",emoji:"🪑",cat:"Objetos",lvl:2},
+  {es:"cama",en:"bed",emoji:"🛏️",cat:"Objetos",lvl:2},
+  {es:"coche",en:"car",emoji:"🚗",cat:"Objetos",lvl:1},
+  {es:"llave",en:"key",emoji:"🔑",cat:"Objetos",lvl:2},
+  {es:"pelota",en:"ball",emoji:"⚽",cat:"Objetos",lvl:1},
+  {es:"lápiz",en:"pencil",emoji:"✏️",cat:"Objetos",lvl:2},
+  // Números
+  {es:"uno",en:"one",emoji:"1️⃣",cat:"Números",lvl:1},
+  {es:"dos",en:"two",emoji:"2️⃣",cat:"Números",lvl:1},
+  {es:"tres",en:"three",emoji:"3️⃣",cat:"Números",lvl:1},
+  {es:"cuatro",en:"four",emoji:"4️⃣",cat:"Números",lvl:1},
+  {es:"cinco",en:"five",emoji:"5️⃣",cat:"Números",lvl:1},
+  {es:"seis",en:"six",emoji:"6️⃣",cat:"Números",lvl:2},
+  {es:"siete",en:"seven",emoji:"7️⃣",cat:"Números",lvl:2},
+  {es:"ocho",en:"eight",emoji:"8️⃣",cat:"Números",lvl:2}
 ];
 
 /* ---------- Criaturas (distracción educativa + álbum) ----------
@@ -789,6 +964,7 @@ const SCENES = {
    ESTADO
    ============================================================ */
 let state = {
+  area:Store.get("area", "mate"),
   world:Store.get("world", WORLDS[0].id),
   level:Store.get("level", "mix"),
   pack:[], idx:0, cells:[], sel:0, revealed:0,
@@ -858,7 +1034,46 @@ function makeOp(levelId){
   return {a, b, op, text, ans};
 }
 function makePack(levelId){
+  if(state.area==="vocab") return makeWordPack(levelId);
   const arr=[]; for(let i=0;i<6;i++) arr.push(makeOp(levelId)); return arr;
+}
+
+/* ---------- Generador de preguntas de Vocabulario ---------- */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=rnd(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let wordUsed = {};
+function makeWordOp(levelId){
+  // ¿pregunta con dibujo (básico) o solo texto (medio)?
+  let basic;
+  if(levelId==="vfacil") basic=true;
+  else if(levelId==="vmedio") basic=false;
+  else basic = Math.random()<0.5;            // vmix
+  // elegir palabra no repetida en esta misión
+  let pool = WORDS.filter(w=>!wordUsed[w.es]);
+  if(pool.length<1){ wordUsed={}; pool=WORDS.slice(); }
+  const w = pool[rnd(0,pool.length-1)]; wordUsed[w.es]=true;
+  // dirección: básico siempre es→en (con dibujo); medio/mix al azar
+  const es2en = basic ? true : (Math.random()<0.5);
+  const src = es2en ? w.es : w.en;
+  const ans = es2en ? w.en : w.es;
+  const srcLang = es2en ? "es" : "en";
+  // distractores: misma categoría primero, si no, cualquiera
+  let cand = WORDS.filter(x=>x.cat===w.cat && x.es!==w.es);
+  if(cand.length<3) cand = cand.concat(WORDS.filter(x=>x.cat!==w.cat));
+  shuffle(cand);
+  const distract=[];
+  for(const x of cand){
+    const t = es2en ? x.en : x.es;
+    if(t!==ans && !distract.includes(t)) distract.push(t);
+    if(distract.length>=3) break;
+  }
+  const options = shuffle([ans, ...distract]);
+  return {type:"word", es:w.es, en:w.en, emoji:w.emoji, cat:w.cat,
+          srcLang, src, ans, options, showEmoji:basic, w:1};
+}
+function makeWordPack(levelId){
+  wordUsed={}; const arr=[];
+  for(let i=0;i<6;i++) arr.push(makeWordOp(levelId));
+  return arr;
 }
 
 /* ============================================================
@@ -905,13 +1120,40 @@ function renderWorlds(){
 }
 function renderLevels(){
   const lc=$("levelChips"); lc.innerHTML="";
-  LEVELS.forEach(l=>{
+  currentLevels().forEach(l=>{
     const c=document.createElement("button");
     c.className="chip"+(state.level===l.id?" active":"");
     c.innerHTML = l.label+`<div style="font-weight:normal;font-size:12px">${l.desc}</div>`;
     c.onclick=()=>{ state.level=l.id; Store.set("level",l.id); renderLevels(); };
     lc.appendChild(c);
   });
+}
+/* Selector de área de conocimiento (Matemáticas / Vocabulario) */
+function renderArea(){
+  const ac=$("areaChips"); if(!ac) return; ac.innerHTML="";
+  AREAS.forEach(a=>{
+    const c=document.createElement("button");
+    c.className="chip"+(state.area===a.id?" active":"");
+    c.innerHTML = a.label+`<div style="font-weight:normal;font-size:12px">${a.desc}</div>`;
+    c.onclick=()=>setArea(a.id);
+    ac.appendChild(c);
+  });
+}
+function syncAreaLead(){
+  const lead=$("levelLead"); if(lead){
+    lead.textContent = state.area==="vocab"
+      ? "Empareja la palabra en español con su traducción en inglés (¡y al revés!)."
+      : "Mezcla repaso de 1º con el reto de 2º (dos dígitos).";
+  }
+  // si el nivel guardado no pertenece al área, usar el primero del área
+  if(!currentLevels().some(l=>l.id===state.level)){
+    state.level=currentLevels()[0].id; Store.set("level",state.level);
+  }
+}
+function setArea(id){
+  state.area=id; Store.set("area",id);
+  syncAreaLead();
+  renderArea(); renderLevels();
 }
 
 /* ============================================================
@@ -931,13 +1173,15 @@ function startPack(){
   buildKeypad();
   $("home").classList.add("hidden");
   $("game").classList.remove("hidden");
-  $("levelLabel").textContent = (LEVELS.find(l=>l.id===state.level)||{}).label||"";
+  $("levelLabel").textContent = (currentLevels().find(l=>l.id===state.level)||{}).label||"";
   setNiloAvatars();
   state.lastMission = sessionOver();
   if(state.lastMission){
     niloSay(`Esta es la última misión de hoy. La hacemos con calma 🦦 Tu progreso se guarda.`,"happy");
   } else {
-    let m=`Hoy te acompaña ${w.char} (${w.role}). ${w.intro} 🦦`;
+    const leg=WORLD_LEG[w.id];
+    const legTxt = leg ? `🧭 Parada ${leg.n} · ${leg.place}. ` : "";
+    let m=`${legTxt}Hoy te acompaña ${w.char}. ${w.intro} 🦦`;
     if(sessionSoon()) m="⏳ Nos queda poquito tiempo hoy. "+m;
     niloSay(m,"happy");
   }
@@ -1057,19 +1301,47 @@ function buildKeypad(){
     k.appendChild(b);
   });
 }
+function setGameMode(mode){
+  const vocab = (mode==="vocab");
+  $("vop").classList.toggle("hidden", vocab);
+  $("keypad").classList.toggle("hidden", vocab);
+  $("helpLegend").classList.toggle("hidden", vocab);
+  $("vocabBox").classList.toggle("hidden", !vocab);
+}
 function showQuestion(){
   const q=state.pack[state.idx];
   state.attempts=0;
+  const unidad = state.area==="vocab" ? "Palabra" : "Operación";
+  $("packProgress").textContent=`${unidad} ${state.idx+1} de 6`+(state.lastMission?" · Última de hoy 🌙":"");
+  $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
+  $("feedback").textContent="";
+  $("feedback").className="feedback";
+  if(q.type==="word"){ showWordQuestion(q); return; }
+  // ----- Matemáticas -----
+  setGameMode("mate");
   renderVertical(q);
   // casillas del resultado (una por columna); empieza seleccionada la de Unidades
   state.cells=new Array(q.w).fill("");
   state.sel=q.w-1;
-  $("packProgress").textContent=`Operación ${state.idx+1} de 6`+(state.lastMission?" · Última de hoy 🌙":"");
-  $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
   $("answerBox").className="answer-box";
-  $("feedback").textContent="";
-  $("feedback").className="feedback";
   paintAnswer();
+}
+/* ----- Vocabulario: muestra la palabra y las opciones ----- */
+function showWordQuestion(q){
+  setGameMode("vocab");
+  const flag = q.srcLang==="es" ? "Español" : "English";
+  $("vPrompt").innerHTML =
+      (q.showEmoji && q.emoji ? `<div class="vemoji">${q.emoji}</div>` : "")
+    + `<div class="vword">${q.src}</div>`
+    + `<div class="vflag">${flag}</div>`;
+  $("vSub").textContent = q.srcLang==="es" ? "¿Cómo se dice en inglés? 🇺🇸" : "¿Cómo se dice en español? 🇲🇽";
+  const cont=$("vOptions"); cont.innerHTML="";
+  q.options.forEach(opt=>{
+    const b=document.createElement("button");
+    b.className="vopt"; b.type="button"; b.textContent=opt;
+    b.onclick=()=>submitWord(opt,b);
+    cont.appendChild(b);
+  });
 }
 
 /* Dibuja la operación en columna y calcula la ayuda visual
@@ -1173,6 +1445,24 @@ function padDelete(){
   paintAnswer();
 }
 
+/* Registro común tras un acierto (matemáticas o vocabulario):
+   cuenta, racha, revela pieza, recompensas y avanza a la siguiente. */
+function registerCorrect(){
+  state.totalCorrect++; Store.set("totalCorrect",state.totalCorrect);
+  state.correctThisPack++;
+  state.streak++; if(state.streak>state.bestStreak){state.bestStreak=state.streak; Store.set("bestStreak",state.bestStreak);}
+  $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
+  revealTile(state.idx);
+  burstConfetti(8);
+  playCorrectAnim();
+  state.idx++;
+  updateRaceChild();
+  if(settings.race && !state.raceDecided && state.idx<6 && Math.random()<0.55) drawPowerup();
+  setTimeout(()=>{
+    if(state.idx>=6){ finishPack(); }
+    else { showQuestion(); }
+  }, 850);
+}
 function submit(){
   if(!answerHasInput()) return;
   const q=state.pack[state.idx];
@@ -1183,19 +1473,7 @@ function submit(){
     $("feedback").textContent="";
     niloSay(NILO_PRAISE[rnd(0,NILO_PRAISE.length-1)], "happy");
     sndGood();
-    state.totalCorrect++; Store.set("totalCorrect",state.totalCorrect);
-    state.correctThisPack++;
-    state.streak++; if(state.streak>state.bestStreak){state.bestStreak=state.streak; Store.set("bestStreak",state.bestStreak);}
-    revealTile(state.idx);
-    burstConfetti(8);
-    playCorrectAnim();
-    state.idx++;
-    updateRaceChild();
-    if(settings.race && !state.raceDecided && state.idx<6 && Math.random()<0.55) drawPowerup();
-    setTimeout(()=>{
-      if(state.idx>=6){ finishPack(); }
-      else { showQuestion(); }
-    }, 850);
+    registerCorrect();
   } else {
     // incorrecto: amable, sin castigo
     state.attempts++; state.mistakes++; state.streak=0;
@@ -1210,6 +1488,33 @@ function submit(){
     $("feedback").className="feedback warm";
     $("feedback").textContent=msg;
     setTimeout(()=>{ state.cells=new Array(q.w).fill(""); state.sel=q.w-1; paintAnswer(); $("answerBox").className="answer-box"; }, 700);
+  }
+}
+/* Respuesta del modo Vocabulario (opción múltiple) */
+function submitWord(choice, btn){
+  const q=state.pack[state.idx];
+  if(!btn || btn.disabled) return;
+  if(choice===q.ans){
+    [...$("vOptions").children].forEach(b=>{ b.disabled=true; if(b!==btn) b.classList.add("locked"); });
+    btn.classList.add("vok");
+    $("feedback").textContent=""; $("feedback").className="feedback";
+    niloSay(NILO_PRAISE[rnd(0,NILO_PRAISE.length-1)], "happy");
+    sndGood();
+    registerCorrect();
+  } else {
+    // incorrecto: amable, sin castigo; puede volver a intentar
+    state.attempts++; state.mistakes++; state.streak=0;
+    $("streakLabel").textContent=`Racha: ${state.streak} 🔥`;
+    btn.classList.add("vbad"); btn.disabled=true;
+    sndOops();
+    if(state.attempts>=3) niloSay("Si quieres, respira un momento con Misi 🐱 (botón de abajo). Lo intentamos otra vez juntos.","warm");
+    else niloSay(NILO_GENTLE[rnd(0,NILO_GENTLE.length-1)], "warm");
+    let msg;
+    if(state.attempts===1) msg="Casi… prueba otra opción 💛";
+    else if(state.attempts===2) msg="Lee despacio y elige de nuevo 🌈";
+    else msg=`Pista: empieza por "${(""+q.ans)[0]}"…`;
+    $("feedback").className="feedback warm";
+    $("feedback").textContent=msg;
   }
 }
 function revealTile(i){
@@ -1261,7 +1566,7 @@ function finishPack(){
   if(state.noGiveUp){ noGiveUpEver=true; Store.set("noGiveUpEver",true); }
   const w=currentWorld();
   $("charName").textContent="¡Es "+w.char+"!";
-  niloSay("¡Llegamos a la meta! Lo hiciste muy bien 🎉🦦","happy");
+  niloSay(`¡Llegamos a la meta! ${w.char} se une a la expedición 🎉🦦`,"happy");
   // Recompensas del Álbum Matemágico (nunca se quitan)
   state.lastRewards = awardPackRewards();
   // ¿se desbloqueó un mundo nuevo?
@@ -1533,6 +1838,138 @@ function modal(html){
 }
 function closeModal(){ $("modalMount").innerHTML=""; }
 
+/* ---------- Mapa de la expedición ---------- */
+function expeditionStatus(){
+  let nextMarked=false;
+  return WORLDS.map((w,i)=>{
+    const done=!!charsDiscovered[w.id];
+    const unlocked = i===0 || !!charsDiscovered[WORLDS[i-1].id];
+    let status;
+    if(done) status="done";
+    else if(unlocked && !nextMarked){ status="current"; nextMarked=true; }
+    else if(unlocked) status="open";
+    else status="locked";
+    return {w,i,status};
+  });
+}
+function showMap(){
+  const rows = expeditionStatus().map(({w,i,status})=>{
+    const leg=WORLD_LEG[w.id]||{n:i+1,place:w.name};
+    const src=w.img||IMAGES[w.id];
+    const pic = status==="locked"
+      ? "🔒"
+      : (src ? `<img src="${src}" alt="" onerror="this.style.display='none';this.parentNode.textContent='🧭'">` : "🧭");
+    const badge = status==="done" ? "✓" : status==="current" ? "📍" : status==="locked" ? "🔒" : "•";
+    const name = status==="locked" ? "??? (por descubrir)" : `${w.name} · ${w.char}`;
+    const place = `Parada ${leg.n} · ${status==="locked" ? "Lugar secreto" : leg.place}`;
+    return `<div class="mstop ${status}">
+      <div class="mstop-pic">${pic}</div>
+      <div class="mstop-body"><div class="mstop-place">${place}</div><div class="mstop-name">${name}</div></div>
+      <div class="mstop-badge">${badge}</div>
+    </div>`;
+  }).join('<div class="mstop-link"></div>');
+  const doneCount=WORLDS.filter(w=>charsDiscovered[w.id]).length;
+  const secret=bastianFound();
+  const secretRow=`<div class="mstop-link"></div><div class="mstop ${secret?'done':'locked'}">
+      <div class="mstop-pic">${secret?'🦫':'❓'}</div>
+      <div class="mstop-body"><div class="mstop-place">Parada secreta · Bosque del Castor</div><div class="mstop-name">${secret?'Bastián · Constructor':'??? (se descubre por constancia)'}</div></div>
+      <div class="mstop-badge">${secret?'✓':'🔒'}</div>
+    </div>`;
+  modal(`
+    <div class="big">🗺️</div>
+    <h2>Mapa de la expedición</h2>
+    <p class="lead">Vas por ${doneCount} de ${WORLDS.length} paradas. ¡Sigue explorando con Nilo! 🦦</p>
+    <div class="mapwrap">${rows}${secretRow}</div>
+    <button class="btn btn-primary" id="closeMap" style="width:100%;margin-top:10px;position:sticky;bottom:-2px">Cerrar</button>
+  `);
+  $("closeMap").onclick=closeModal;
+  $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
+/* ---------- Bienvenida (solo la primera vez) ---------- */
+function maybeWelcome(){
+  if(Store.get("seenWelcome", false)) return;
+  modal(`
+    <div class="welcomeava" id="welcomeAva"></div>
+    <h2>¡Bienvenido a Nilo Explorador! 🧭</h2>
+    <p class="lead">Soy <b>Nilo el Navegante</b> 🦦. Vamos juntos de <b>expedición</b>: exploraremos <b>números</b> y <b>palabras</b>, y en cada parada sumaremos un amigo. Avanzas a tu ritmo, sin prisa.</p>
+    <p class="lead" style="font-style:italic;color:#7a8aa8">"No importa qué tan lejos llegues hoy. Lo importante es querer regresar mañana."</p>
+    <button class="btn btn-primary" id="welcomeGo" style="width:100%;margin-top:8px">¡Vamos! 🚀</button>
+    <button class="btn btn-ghost" id="welcomeMap" style="width:100%;margin-top:8px">🗺️ Ver el mapa</button>
+  `);
+  const av=$("welcomeAva"); if(av) av.innerHTML=niloAvatarHTML();
+  $("welcomeGo").onclick=()=>{ Store.set("seenWelcome",true); closeModal(); };
+  $("welcomeMap").onclick=()=>{ Store.set("seenWelcome",true); closeModal(); showMap(); };
+}
+
+/* ============================================================
+   BASTIÁN · Bosque del Castor · Construcciones por constancia
+   "Se desbloquea únicamente por constancia. No por velocidad."
+   ============================================================ */
+const BASTIAN_SVG = `<svg viewBox="0 0 100 100"><circle cx="28" cy="30" r="9" fill="#8a5a2b"/><circle cx="72" cy="30" r="9" fill="#8a5a2b"/><circle cx="50" cy="55" r="36" fill="#a9743f"/><ellipse cx="50" cy="66" rx="22" ry="18" fill="#e6c89a"/><circle cx="38" cy="50" r="7" fill="#fff"/><circle cx="62" cy="50" r="7" fill="#fff"/><circle cx="39" cy="51" r="3.6" fill="#3a2a1a"/><circle cx="61" cy="51" r="3.6" fill="#3a2a1a"/><ellipse cx="50" cy="61" rx="6" ry="4.4" fill="#3a2a1a"/><rect x="45" y="65.5" width="4.4" height="10" rx="1.5" fill="#fff" stroke="#d8c39a" stroke-width="0.8"/><rect x="50.6" y="65.5" width="4.4" height="10" rx="1.5" fill="#fff" stroke="#d8c39a" stroke-width="0.8"/></svg>`;
+function bastianAvatarHTML(){ return `<img src="Bastian.png" alt="Bastián" onerror="this.outerHTML=BASTIAN_SVG">`; }
+
+/* Construcciones permanentes (según la lámina de Bastián).
+   "need" = nº de DÍAS DE VISITA acumulados (no se pierden nunca, fiel a
+   "nunca se pierde progreso"). La racha consecutiva se muestra como ánimo. */
+const CONSTRUCTIONS = [
+  {id:"arbol",    emoji:"🌱", name:"Un árbol",                 need:5},
+  {id:"puente",   emoji:"🌉", name:"Un puente",                need:10},
+  {id:"cabana",   emoji:"🏡", name:"Una cabaña",               need:20},
+  {id:"molino",   emoji:"🌾", name:"Un molino",                need:30},
+  {id:"estacion", emoji:"🚂", name:"Una estación",             need:45},
+  {id:"puerto",   emoji:"⚓", name:"Un puerto",                 need:60},
+  {id:"faro",     emoji:"🗼", name:"Un faro",                  need:90},
+  {id:"granbase", emoji:"🏰", name:"La Gran Base Exploradora", need:180}
+];
+
+let dayStreak    = Store.get("dayStreak", 0);
+let daysReturned = Store.get("daysReturned", 0);
+let lastVisit    = Store.get("lastVisit", "");
+let buildsOwned  = Store.get("buildsOwned", []);
+function isoDay(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function updateDayStreak(){
+  const now=new Date(), today=isoDay(now);
+  if(lastVisit===today) return;                 // ya contamos hoy
+  const y=new Date(now); y.setDate(now.getDate()-1);
+  dayStreak = (lastVisit===isoDay(y)) ? dayStreak+1 : 1;  // racha (solo informativa)
+  daysReturned += 1;                            // días de visita: nunca baja
+  lastVisit=today;
+  Store.set("dayStreak",dayStreak); Store.set("daysReturned",daysReturned); Store.set("lastVisit",lastVisit);
+}
+function checkConstructions(){
+  const newly=[];
+  CONSTRUCTIONS.forEach(c=>{ if(!buildsOwned.includes(c.id) && daysReturned>=c.need){ buildsOwned.push(c.id); newly.push(c); } });
+  if(newly.length) Store.set("buildsOwned",buildsOwned);
+  return newly;
+}
+function bastianFound(){ return buildsOwned.length>0; }
+
+function showCamp(){
+  const found=bastianFound();
+  const rows = CONSTRUCTIONS.map(c=>{
+    const has=buildsOwned.includes(c.id);
+    return `<div class="mstop ${has?'done':'locked'}">
+      <div class="mstop-pic">${has?c.emoji:'🔒'}</div>
+      <div class="mstop-body"><div class="mstop-place">${has?'Construido':('Al volver '+c.need+' días')}</div><div class="mstop-name">${has?c.name:'???'}</div></div>
+      <div class="mstop-badge">${has?'✓':''}</div>
+    </div>`;
+  }).join('<div class="mstop-link"></div>');
+  const intro = found
+    ? `Soy <b>Bastián</b> 🦫. "Las grandes aventuras se construyen poquito a poquito." Has vuelto <b>${daysReturned} día(s)</b> (racha actual: ${dayStreak}): ¡así crece tu mundo!`
+    : `Un lugar secreto de la expedición. Vuelve <b>cada día</b> y, con constancia, conocerás a un amigo constructor. Llevas <b>${daysReturned} día(s)</b> de visita.`;
+  modal(`
+    <div class="welcomeava" id="bastianAva" style="font-size:42px;display:flex;align-items:center;justify-content:center">${found?'':'🔒'}</div>
+    <h2>${found?'Bosque del Castor · Bastián 🦫':'Bosque del Castor 🔒'}</h2>
+    <p class="lead">${intro}</p>
+    <div class="mapwrap">${rows}</div>
+    <button class="btn btn-primary" id="closeCamp" style="width:100%;margin-top:10px;position:sticky;bottom:-2px">Cerrar</button>
+  `);
+  if(found){ const a=$("bastianAva"); if(a){ a.style.fontSize=""; a.innerHTML=bastianAvatarHTML(); } }
+  $("closeCamp").onclick=closeModal;
+  $("modalMount").firstChild.addEventListener("click",e=>{ if(e.target===e.currentTarget) closeModal(); });
+}
+
 function showBadgeModal(list){
   const items=list.map(b=>`
     <div class="badge earned ${b.ring}" style="margin:0 8px">
@@ -1771,18 +2208,24 @@ function goHome(){
   $("fly").classList.add("hidden");
   $("game").classList.add("hidden");
   $("home").classList.remove("hidden");
-  renderWorlds(); renderLevels();
+  renderArea(); renderWorlds(); renderLevels(); syncAreaLead();
   window.scrollTo(0,0);
 }
 $("btnStart").onclick=()=>{ if(sessionOver()) sessionGate(); else startPack(); };
 $("btnHome").onclick=goHome;
 $("btnBadges").onclick=showBadges;
+$("btnMap").onclick=showMap;
+$("btnCamp").onclick=showCamp;
 $("btnAlbum").onclick=showAlbum;
 $("btnMagic").onclick=showMagicAlbum;
 $("btnSettings").onclick=showSettings;
 $("btnHint").onclick=()=>{
   const q=state.pack[state.idx];
   $("feedback").className="feedback";
+  if(q && q.type==="word"){
+    $("feedback").textContent=`Pista: empieza por "${(""+q.ans)[0]}" y tiene ${(""+q.ans).length} letras.`;
+    return;
+  }
   $("feedback").textContent=`Pista: la respuesta tiene ${(""+q.ans).length} cifra(s) y empieza por ${(""+q.ans)[0]}.`;
 };
 $("btnBreathe").onclick=showBreathe;
@@ -1795,6 +2238,11 @@ document.addEventListener("pointercancel", sheetCleanup);
 /* teclado físico opcional (tablet con teclado / PC) */
 document.addEventListener("keydown",e=>{
   if($("game").classList.contains("hidden")) return;
+  const cq=state.pack[state.idx];
+  if(cq && cq.type==="word"){
+    if(e.key>="1"&&e.key<="4"){ const b=$("vOptions").children[parseInt(e.key)-1]; if(b && !b.disabled) b.click(); }
+    return;
+  }
   if(e.key>="0"&&e.key<="9"){ padInput(e.key); }
   else if(e.key==="Backspace"){ padDelete(); }
   else if(e.key==="ArrowLeft"){ if(state.sel>0){ state.sel--; paintAnswer(); } }
@@ -1804,9 +2252,14 @@ document.addEventListener("keydown",e=>{
 
 /* ---------- init ---------- */
 applySettings();
+renderArea();
 renderWorlds();
 renderLevels();
+syncAreaLead();
 setNiloAvatars();
+updateDayStreak();
+maybeWelcome();
+checkConstructions().forEach(c=> toast(`🪵 ¡Bastián construyó: ${c.name}! (${daysReturned} días de visita)`));
 
 /* Registro del Service Worker (PWA) — solo funciona vía http/https, no con file:// */
 if("serviceWorker" in navigator){
